@@ -8,8 +8,10 @@ unsigned short WORLD_TILE_LENGTH;		// length of area tiles
 unsigned short WORLD_MAP_LENGTH;		// length of area map
 unsigned short WORLD_MAP_TILE_WIDTH;	// how many tiles wide our area map is
 unsigned short WORLD_MAP_TILE_HEIGHT;	// how many tiles tall our area map is
-unsigned short TILE_COL;				// our current leftmost col position on the area map
-unsigned short TILE_ROW;				// our current topmost row position on the area map
+int TILE_COL;							// our current leftmost col position on the area map
+int TILE_ROW;							// our current topmost row position on the area map
+int TILE_COL_OFFSET;
+int TILE_ROW_OFFSET;
 
 // Use this when entering a new area to load the area's tiles & map
 void loadMap(const unsigned short* tiles, const unsigned short tlen, // tiles of new area
@@ -35,30 +37,68 @@ void initMap(int r, int c) {
 	}
 	TILE_ROW = r;
 	TILE_COL = c;
+	TILE_ROW_OFFSET = 0;
+	TILE_COL_OFFSET = 0;
 }
 
-// draw 2 cols worth of tiles to the left 
+// draw 2 cols worth of tiles to appear on the left
 void moveMapLeft() {
 
-	
-	for (int i = 0; i < SCREEN_TILE_HEIGHT; i++) {
-		SCREEN_MAP[OFFSET(i, TILE_COL - 2, 32)] = WORLD_MAP[OFFSET(i, TILE_COL - 2, WORLD_MAP_TILE_WIDTH)];
-		SCREEN_MAP[OFFSET(i, TILE_COL - 1, 32)] = WORLD_MAP[OFFSET(i, TILE_COL - 1, WORLD_MAP_TILE_WIDTH)];
-	}
-
+	TILE_COL_OFFSET -= 2;
 	TILE_COL -= 2;
+
+	int temp_col_offset = 0;
+
+	// make sure not drawing in a negative column
+	// if < 0, wrap around to draw else where.
+	if (TILE_COL_OFFSET < 0) {
+		temp_col_offset = 32 + TILE_COL_OFFSET;
+
+		for (int i = 0; i < SCREEN_TILE_HEIGHT; i++) {
+			SCREEN_MAP[OFFSET(i, temp_col_offset, 32)] = WORLD_MAP[OFFSET(i, TILE_COL, WORLD_MAP_TILE_WIDTH)];
+			SCREEN_MAP[OFFSET(i, temp_col_offset + 1, 32)] = WORLD_MAP[OFFSET(i, TILE_COL + 1, WORLD_MAP_TILE_WIDTH)];
+		}
+
+	// if the column is positive, draw like normal
+	} else {
+		for (int i = 0; i < SCREEN_TILE_HEIGHT; i++) {
+			SCREEN_MAP[OFFSET(i, TILE_COL_OFFSET, 32)] = WORLD_MAP[OFFSET(i, TILE_COL, WORLD_MAP_TILE_WIDTH)];
+			SCREEN_MAP[OFFSET(i, TILE_COL_OFFSET + 1, 32)] = WORLD_MAP[OFFSET(i, TILE_COL + 1, WORLD_MAP_TILE_WIDTH)];
+		}
+	}
+	
 	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2);
 
 }
 
+// draw 2 cols worth of tiles to appear on the right
 void moveMapRight() {
 
-	for (int i = 0; i < SCREEN_TILE_HEIGHT; i++) {
-		SCREEN_MAP[OFFSET(i, TILE_COL - 2, 32)] = WORLD_MAP[OFFSET(i, SCREEN_TILE_WIDTH + TILE_COL, WORLD_MAP_TILE_WIDTH)];
-		SCREEN_MAP[OFFSET(i, TILE_COL - 1, 32)] = WORLD_MAP[OFFSET(i, SCREEN_TILE_WIDTH + TILE_COL + 1, WORLD_MAP_TILE_WIDTH)];
+	TILE_COL_OFFSET += 2;
+	TILE_COL += 2;
+
+	int temp_col_offset = 0;
+
+	// make sure not drawing in a negative column
+	// if < 0, wrap around to draw else where.
+	if (TILE_COL_OFFSET <= 0) {
+		temp_col_offset = 32 + TILE_COL_OFFSET;
+
+		for (int i = 0; i < SCREEN_TILE_HEIGHT; i++) {
+		SCREEN_MAP[OFFSET(i, temp_col_offset - 2, 32)] = WORLD_MAP[OFFSET(i, SCREEN_TILE_WIDTH + TILE_COL, WORLD_MAP_TILE_WIDTH)];
+		SCREEN_MAP[OFFSET(i, temp_col_offset - 1, 32)] = WORLD_MAP[OFFSET(i, SCREEN_TILE_WIDTH + TILE_COL + 1, WORLD_MAP_TILE_WIDTH)];
+
+		}
+
+	// if the column is positive, draw like normal
+	} else {
+		for (int i = 0; i < SCREEN_TILE_HEIGHT; i++) {
+		SCREEN_MAP[OFFSET(i, TILE_COL_OFFSET - 2, 32)] = WORLD_MAP[OFFSET(i, SCREEN_TILE_WIDTH + TILE_COL, WORLD_MAP_TILE_WIDTH)];
+		SCREEN_MAP[OFFSET(i, TILE_COL_OFFSET - 1, 32)] = WORLD_MAP[OFFSET(i, SCREEN_TILE_WIDTH + TILE_COL + 1, WORLD_MAP_TILE_WIDTH)];
+
+		}
 	}
 
-	//TILE_COL += 2;
 	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2);
 	
 }

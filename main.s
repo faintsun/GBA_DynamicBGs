@@ -50,9 +50,9 @@ initMode0:
 	mov	r0, #3
 	mov	lr, pc
 	bx	r4
-	mov	r1, #0
+	mov	r1, #2
+	mov	r0, #0
 	ldr	r3, .L4+32
-	mov	r0, r1
 	mov	lr, pc
 	bx	r3
 	ldr	r3, .L4+36
@@ -94,8 +94,8 @@ buttonHandler:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	mov	r3, #67108864
-	ldr	r2, .L32
-	ldr	r1, .L32+4
+	ldr	r2, .L26
+	ldr	r1, .L26+4
 	ldr	r0, [r2]
 	push	{r4, r5, r6, lr}
 	str	r0, [r1]
@@ -104,114 +104,113 @@ buttonHandler:
 	ldr	r3, [r3, #304]
 	tst	r3, #16
 	bne	.L7
-	ldr	r3, .L32+8
-	ldr	r1, .L32+12
+	ldr	r3, .L26+8
+	ldr	r2, .L26+12
 	ldrh	r3, [r3]
-	ldrh	r2, [r1]
+	ldr	r2, [r2]
 	sub	r3, r3, #30
-	cmp	r2, r3
-	blt	.L29
+	cmp	r3, r2
+	bgt	.L23
 .L7:
 	mov	r3, #67108864
 	ldr	r3, [r3, #304]
 	tst	r3, #32
 	bne	.L8
-	ldr	r3, .L32+12
-	ldrh	r3, [r3]
+	ldr	r3, .L26+12
+	ldr	r3, [r3]
 	cmp	r3, #0
-	bne	.L30
+	bgt	.L24
 .L8:
 	mov	r3, #67108864
 	ldr	r3, [r3, #304]
 	tst	r3, #128
 	bne	.L10
-	mov	ip, #1
-	mov	r0, #2
-	ldr	r2, .L32+16
-	ldrh	r1, [r2]
-	add	r1, r1, ip
-	lsl	r1, r1, #16
-	lsr	r1, r1, #16
-	ldr	r3, .L32+20
-	cmp	r1, #6
-	strh	r1, [r2]	@ movhi
-	str	ip, [r3]
-	str	r0, [r3, #4]
-	bhi	.L31
+	mov	lr, #1
+	mov	ip, #2
+	ldr	r2, .L26+16
+	ldr	r1, [r2]
+	ldr	r3, .L26+20
+	add	r0, r1, lr
+	cmp	r0, #6
+	str	r0, [r2]
+	str	lr, [r3]
+	str	ip, [r3, #4]
+	bgt	.L25
 .L10:
 	mov	r3, #67108864
 	ldr	r3, [r3, #304]
 	tst	r3, #64
 	bne	.L6
-	ldr	r2, .L32+16
-	ldrh	r3, [r2]
+	ldr	r2, .L26+16
+	ldr	r3, [r2]
 	cmp	r3, #0
-	beq	.L6
+	ble	.L6
 	mov	ip, #1
 	mov	r0, #3
-	ldr	r1, .L32+20
+	ldr	r1, .L26+20
 	sub	r3, r3, #1
-	strh	r3, [r2]	@ movhi
+	str	r3, [r2]
 	str	ip, [r1]
 	str	r0, [r1, #4]
 .L6:
 	pop	{r4, r5, r6, lr}
 	bx	lr
-.L29:
+.L24:
 	mov	r0, #1
-	ldr	r3, .L32+20
-	add	r2, r2, #2
-	strh	r2, [r1]	@ movhi
-	str	r0, [r3]
-	str	r0, [r3, #4]
-	str	r0, [r3, #8]
-	b	.L7
-.L31:
-	add	r1, r1, #20
-	ldr	r5, .L32+24
+	mov	r1, #0
+	ldr	r3, .L26+20
+	ldr	r2, .L26+24
+	stm	r3, {r0, r1}
+	mov	lr, pc
+	bx	r2
+	b	.L8
+.L25:
+	add	r1, r1, #21
+	ldr	r5, .L26+28
 	lsl	r1, r1, #6
-	ldr	r3, .L32+28
+	ldr	r3, .L26+32
 	sub	r2, r1, #1664
 	add	r2, r5, r2
 	add	r1, r3, r1
 	mov	r0, #3
 	mov	r3, #32
-	ldr	r4, .L32+32
+	ldr	r4, .L26+36
 	mov	lr, pc
 	bx	r4
-	ldr	r3, .L32+36
+	ldr	r3, .L26+40
 	ldrh	r3, [r3]
 	mov	r1, r5
 	lsr	r3, r3, #1
-	ldr	r2, .L32+40
+	ldr	r2, .L26+44
 	mov	r0, #3
 	mov	lr, pc
 	bx	r4
 	b	.L10
-.L30:
-	mov	r0, #1
-	mov	r1, #0
-	ldr	r3, .L32+20
-	ldr	r2, .L32+44
-	stm	r3, {r0, r1}
+.L23:
+	mov	r2, #1
+	ldr	r3, .L26+20
+	ldr	r1, .L26+48
+	str	r2, [r3]
+	str	r2, [r3, #4]
 	mov	lr, pc
-	bx	r2
-	b	.L8
-.L33:
+	bx	r1
+	b	.L7
+.L27:
 	.align	2
-.L32:
+.L26:
 	.word	buttons
 	.word	oldButtons
 	.word	WORLD_MAP_TILE_WIDTH
 	.word	TILE_COL
 	.word	TILE_ROW
 	.word	.LANCHOR0
+	.word	moveMapLeft
 	.word	SCREEN_MAP
 	.word	WORLD_MAP
 	.word	DMANow
 	.word	WORLD_MAP_LENGTH
 	.word	100716544
-	.word	moveMapLeft
+	.word	moveMapRight
 	.size	buttonHandler, .-buttonHandler
 	.align	2
 	.global	cameraHandler
@@ -224,56 +223,56 @@ cameraHandler:
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
-	ldr	r1, .L43
-	ldr	r2, .L43+4
+	ldr	r1, .L37
+	ldr	r2, .L37+4
 	ldr	r3, [r1]
 	ldr	r0, [r2, #4]
 	sub	r3, r3, #1
 	cmp	r0, #0
 	str	r3, [r1]
-	bne	.L35
-	ldr	r0, [r2, #12]
+	bne	.L29
+	ldr	r0, [r2, #8]
 	cmp	r3, #0
 	sub	r0, r0, #1
-	str	r0, [r2, #12]
+	str	r0, [r2, #8]
 	bxgt	lr
-.L42:
+.L36:
 	mov	ip, #16
 	mov	r0, #2
 	mov	r3, #0
 	str	ip, [r1]
-	str	r0, [r2, #8]
+	str	r0, [r2, #16]
 	str	r3, [r2]
 	bx	lr
-.L35:
+.L29:
 	cmp	r0, #1
-	beq	.L40
+	beq	.L34
 	cmp	r0, #2
-	beq	.L41
+	beq	.L35
 	cmp	r0, #3
-	ldreq	r0, [r2, #16]
+	ldreq	r0, [r2, #12]
 	subeq	r0, r0, #1
-	streq	r0, [r2, #16]
+	streq	r0, [r2, #12]
 	cmp	r3, #0
 	bxgt	lr
-	b	.L42
-.L40:
+	b	.L36
+.L34:
+	ldr	r0, [r2, #8]
+	cmp	r3, #0
+	add	r0, r0, #1
+	str	r0, [r2, #8]
+	bxgt	lr
+	b	.L36
+.L35:
 	ldr	r0, [r2, #12]
 	cmp	r3, #0
 	add	r0, r0, #1
 	str	r0, [r2, #12]
 	bxgt	lr
-	b	.L42
-.L41:
-	ldr	r0, [r2, #16]
-	cmp	r3, #0
-	add	r0, r0, #1
-	str	r0, [r2, #16]
-	bxgt	lr
-	b	.L42
-.L44:
+	b	.L36
+.L38:
 	.align	2
-.L43:
+.L37:
 	.word	.LANCHOR1
 	.word	.LANCHOR0
 	.size	cameraHandler, .-cameraHandler
@@ -289,62 +288,44 @@ main:
 	@ Volatile: function does not return.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r7, fp, lr}
-	ldr	r3, .L54
+	push	{r7, lr}
+	ldr	r3, .L45
 	mov	lr, pc
 	bx	r3
-	mov	r10, #0
 	mov	r6, #67108864
-	ldr	r4, .L54+4
-	ldr	r8, .L54+8
-	ldr	r7, .L54+12
-	ldr	r9, .L54+16
-	ldr	fp, .L54+20
-	ldr	r5, .L54+24
-	b	.L50
-.L53:
+	ldr	r5, .L45+4
+	ldr	r8, .L45+8
+	ldr	r7, .L45+12
+	ldr	r4, .L45+16
+	b	.L42
+.L44:
 	mov	lr, pc
 	bx	r8
-	ldr	r3, [r4, #8]
-	cmp	r3, #2
-	beq	.L52
-.L48:
-	ldrh	r2, [r4, #12]
-	ldrh	r3, [r4, #16]
+.L41:
+	ldrh	r2, [r5, #8]
+	ldrh	r3, [r5, #12]
 	strh	r2, [r6, #24]	@ movhi
 	strh	r3, [r6, #26]	@ movhi
 	mov	lr, pc
-	bx	r5
+	bx	r4
 	mov	lr, pc
-	bx	r5
+	bx	r4
 	mov	lr, pc
-	bx	r5
-.L50:
-	ldr	r3, [r4]
+	bx	r4
+.L42:
+	ldr	r3, [r5]
 	cmp	r3, #0
-	beq	.L53
+	beq	.L44
 	mov	lr, pc
 	bx	r7
-	ldr	r3, [r4, #8]
-	cmp	r3, #2
-	bne	.L48
-.L52:
-	ldrh	r3, [r9]
-	cmp	r3, #1
-	movhi	lr, pc
-	bxhi	fp
-.L49:
-	str	r10, [r4, #8]
-	b	.L48
-.L55:
+	b	.L41
+.L46:
 	.align	2
-.L54:
+.L45:
 	.word	initMode0
 	.word	.LANCHOR0
 	.word	buttonHandler
 	.word	cameraHandler
-	.word	TILE_COL
-	.word	moveMapRight
 	.word	waitForVblank
 	.size	main, .-main
 	.text
@@ -360,15 +341,15 @@ updateScreenLocations:
 	@ frame_needed = 0, uses_anonymous_args = 0
 	@ link register save eliminated.
 	mov	r3, #67108864
-	ldr	r2, .L57
-	ldrh	r1, [r2, #12]
-	ldrh	r2, [r2, #16]
+	ldr	r2, .L48
+	ldrh	r1, [r2, #8]
+	ldrh	r2, [r2, #12]
 	strh	r1, [r3, #24]	@ movhi
 	strh	r2, [r3, #26]	@ movhi
 	bx	lr
-.L58:
+.L49:
 	.align	2
-.L57:
+.L48:
 	.word	.LANCHOR0
 	.size	updateScreenLocations, .-updateScreenLocations
 	.global	delayRightMove
@@ -397,10 +378,6 @@ moving:
 	.size	dir, 4
 dir:
 	.space	4
-	.type	delayRightMove, %object
-	.size	delayRightMove, 4
-delayRightMove:
-	.space	4
 	.type	hOff, %object
 	.size	hOff, 4
 hOff:
@@ -408,5 +385,9 @@ hOff:
 	.type	vOff, %object
 	.size	vOff, 4
 vOff:
+	.space	4
+	.type	delayRightMove, %object
+	.size	delayRightMove, 4
+delayRightMove:
 	.space	4
 	.ident	"GCC: (devkitARM release 47) 7.1.0"

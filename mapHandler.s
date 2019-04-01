@@ -92,10 +92,15 @@ initMap:
 	cmp	r7, r4
 	add	r5, r5, #1
 	bne	.L7
-	ldr	r3, .L10+16
-	ldr	r2, .L10+20
-	strh	r6, [r3]	@ movhi
-	strh	fp, [r2]	@ movhi
+	mov	r3, #0
+	ldr	r2, .L10+16
+	ldr	r0, .L10+20
+	str	r3, [r2]
+	ldr	r1, .L10+24
+	ldr	r2, .L10+28
+	str	r3, [r0]
+	str	fp, [r1]
+	str	r6, [r2]
 	pop	{r3, r4, r5, r6, r7, r8, r9, r10, fp, lr}
 	bx	lr
 .L11:
@@ -105,8 +110,10 @@ initMap:
 	.word	WORLD_MAP_TILE_WIDTH
 	.word	WORLD_MAP
 	.word	DMANow
-	.word	TILE_COL
+	.word	TILE_ROW_OFFSET
+	.word	TILE_COL_OFFSET
 	.word	TILE_ROW
+	.word	TILE_COL
 	.size	initMap, .-initMap
 	.align	2
 	.global	moveMapLeft
@@ -118,20 +125,28 @@ moveMapLeft:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r5, r6, lr}
-	ldr	r4, .L16
-	ldr	r1, .L16+4
-	ldr	r3, .L16+8
-	ldrh	r5, [r4]
-	ldrh	ip, [r1]
-	ldr	r2, .L16+12
-	lsl	r1, r5, #1
-	add	lr, r3, #1280
-	add	r2, r1, r2
-	add	r3, r1, r3
-	add	lr, lr, r1
+	ldr	r0, .L20
+	ldr	r2, .L20+4
+	ldr	r3, [r0]
+	ldr	r1, [r2]
+	sub	ip, r3, #2
+	push	{r4, lr}
+	ldr	lr, .L20+8
+	str	ip, [r0]
+	sub	r0, r1, #2
+	str	r0, [r2]
+	ldr	r0, .L20+12
+	cmp	ip, #0
+	ldr	r2, .L20+16
+	ldrh	ip, [lr]
+	lsl	r3, r3, #1
+	add	lr, r0, #1280
+	add	lr, lr, r3
 	lsl	ip, ip, #1
-.L13:
+	add	r3, r3, r0
+	add	r2, r2, r1, lsl #1
+	blt	.L14
+.L16:
 	ldrh	r0, [r2, #-4]
 	ldrh	r1, [r2, #-2]
 	strh	r0, [r3, #-4]	@ movhi
@@ -139,23 +154,33 @@ moveMapLeft:
 	add	r3, r3, #64
 	cmp	r3, lr
 	add	r2, r2, ip
-	bne	.L13
-	ldr	r3, .L16+16
+	bne	.L16
+.L15:
+	ldr	r3, .L20+20
 	ldrh	r3, [r3]
-	sub	r5, r5, #2
-	strh	r5, [r4]	@ movhi
+	ldr	r4, .L20+24
+	ldr	r2, .L20+28
 	lsr	r3, r3, #1
-	ldr	r4, .L16+20
-	ldr	r2, .L16+24
-	ldr	r1, .L16+8
+	ldr	r1, .L20+12
 	mov	r0, #3
 	mov	lr, pc
 	bx	r4
-	pop	{r4, r5, r6, lr}
+	pop	{r4, lr}
 	bx	lr
-.L17:
+.L14:
+	ldrh	r0, [r2, #-4]
+	ldrh	r1, [r2, #-2]
+	strh	r0, [r3, #60]	@ movhi
+	strh	r1, [r3, #62]	@ movhi
+	add	r3, r3, #64
+	cmp	lr, r3
+	add	r2, r2, ip
+	bne	.L14
+	b	.L15
+.L21:
 	.align	2
-.L16:
+.L20:
+	.word	TILE_COL_OFFSET
 	.word	TILE_COL
 	.word	WORLD_MAP_TILE_WIDTH
 	.word	SCREEN_MAP
@@ -174,42 +199,62 @@ moveMapRight:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r3, .L22
-	ldr	r1, .L22+4
+	ldr	r0, .L30
+	ldr	r2, .L30+4
+	ldr	r3, [r0]
+	ldr	r1, [r2]
+	add	ip, r3, #2
 	push	{r4, lr}
-	ldrh	lr, [r3]
-	ldr	r3, .L22+8
-	ldrh	ip, [r1]
-	ldr	r2, .L22+12
-	lsl	r1, lr, #1
-	add	lr, r3, #1280
-	add	r2, r1, r2
-	add	r3, r1, r3
-	add	lr, lr, r1
+	ldr	lr, .L30+8
+	str	ip, [r0]
+	add	r0, r1, #2
+	str	r0, [r2]
+	ldr	r0, .L30+12
+	cmp	ip, #0
+	ldr	r2, .L30+16
+	ldrh	ip, [lr]
+	lsl	r3, r3, #1
+	add	lr, r0, #1280
+	add	lr, lr, r3
 	lsl	ip, ip, #1
-.L19:
-	ldrh	r0, [r2, #60]
-	ldrh	r1, [r2, #62]
-	strh	r0, [r3, #-4]	@ movhi
-	strh	r1, [r3, #-2]	@ movhi
+	add	r3, r3, r0
+	add	r2, r2, r1, lsl #1
+	ble	.L24
+.L26:
+	ldrh	r0, [r2, #64]
+	ldrh	r1, [r2, #66]
+	strh	r0, [r3]	@ movhi
+	strh	r1, [r3, #2]	@ movhi
 	add	r3, r3, #64
 	cmp	r3, lr
 	add	r2, r2, ip
-	bne	.L19
-	ldr	r3, .L22+16
+	bne	.L26
+.L25:
+	ldr	r3, .L30+20
 	ldrh	r3, [r3]
-	ldr	r4, .L22+20
-	ldr	r2, .L22+24
+	ldr	r4, .L30+24
+	ldr	r2, .L30+28
 	lsr	r3, r3, #1
-	ldr	r1, .L22+8
+	ldr	r1, .L30+12
 	mov	r0, #3
 	mov	lr, pc
 	bx	r4
 	pop	{r4, lr}
 	bx	lr
-.L23:
+.L24:
+	ldrh	r0, [r2, #64]
+	ldrh	r1, [r2, #66]
+	strh	r0, [r3, #64]	@ movhi
+	strh	r1, [r3, #66]	@ movhi
+	add	r3, r3, #64
+	cmp	lr, r3
+	add	r2, r2, ip
+	bne	.L24
+	b	.L25
+.L31:
 	.align	2
-.L22:
+.L30:
+	.word	TILE_COL_OFFSET
 	.word	TILE_COL
 	.word	WORLD_MAP_TILE_WIDTH
 	.word	SCREEN_MAP
@@ -218,8 +263,10 @@ moveMapRight:
 	.word	DMANow
 	.word	100716544
 	.size	moveMapRight, .-moveMapRight
-	.comm	TILE_ROW,2,2
-	.comm	TILE_COL,2,2
+	.comm	TILE_ROW_OFFSET,4,4
+	.comm	TILE_COL_OFFSET,4,4
+	.comm	TILE_ROW,4,4
+	.comm	TILE_COL,4,4
 	.comm	WORLD_MAP_TILE_HEIGHT,2,2
 	.comm	WORLD_MAP_TILE_WIDTH,2,2
 	.comm	WORLD_MAP_LENGTH,2,2

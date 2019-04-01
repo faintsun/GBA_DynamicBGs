@@ -6,8 +6,10 @@ extern unsigned short WORLD_TILE_LENGTH;
 extern unsigned short WORLD_MAP_LENGTH;
 extern unsigned short WORLD_MAP_TILE_WIDTH;
 extern unsigned short WORLD_MAP_TILE_HEIGHT;
-extern unsigned short TILE_COL;				
-extern unsigned short TILE_ROW;	
+extern int TILE_COL;				
+extern int TILE_ROW;	
+extern int TILE_COL_OFFSET;
+extern int TILE_ROW_OFFSET;
 
 void initMap(int r, int c);
 void loadMap(const unsigned short*, const unsigned short, const unsigned short*, const unsigned short, unsigned short, unsigned short);

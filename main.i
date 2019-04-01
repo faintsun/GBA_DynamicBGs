@@ -73,8 +73,10 @@ extern unsigned short WORLD_TILE_LENGTH;
 extern unsigned short WORLD_MAP_LENGTH;
 extern unsigned short WORLD_MAP_TILE_WIDTH;
 extern unsigned short WORLD_MAP_TILE_HEIGHT;
-extern unsigned short TILE_COL;
-extern unsigned short TILE_ROW;
+extern int TILE_COL;
+extern int TILE_ROW;
+extern int TILE_COL_OFFSET;
+extern int TILE_ROW_OFFSET;
 
 void initMap(int r, int c);
 void loadMap(const unsigned short*, const unsigned short, const unsigned short*, const unsigned short, unsigned short, unsigned short);
@@ -129,16 +131,7 @@ int main() {
   } else {
    cameraHandler();
   }
-
-
-  if (delayRightMove == 2) {
-   if (TILE_COL >=2) {
-    moveMapRight();
-   }
-   delayRightMove = 0;
-
-  }
-
+# 54 "main.c"
   updateScreenLocations();
 
   waitForVblank();
@@ -161,7 +154,7 @@ void initMode0() {
 
  DMANow(3, WORLD_TILES, &((charblock *)0x6000000)[0], WORLD_TILE_LENGTH/2);
 
- initMap(0, 0);
+ initMap(0, 2);
 
  DMANow(3, SCREEN_MAP, &((screenblock *)0x6000000)[26], WORLD_MAP_LENGTH/2);
 
@@ -179,8 +172,9 @@ void buttonHandler() {
   if (TILE_COL < WORLD_MAP_TILE_WIDTH - (240 / 8)) {
    moving = 1;
    dir = RIGHT;
-   TILE_COL += 2;
-   delayRightMove = 1;
+
+
+   moveMapRight();
   }
  }
 
@@ -188,7 +182,9 @@ void buttonHandler() {
   if (TILE_COL > 0) {
    moving = 1;
    dir = LEFT;
+
    moveMapLeft();
+
   }
  }
  if((~(*(volatile unsigned int *)0x04000130) & ((1<<7)))) {

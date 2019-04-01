@@ -43,13 +43,13 @@ int main() {
 		}
 
 
-		if (delayRightMove == 2) {
-			if (TILE_COL >=2) {
-				moveMapRight();
-			}
-			delayRightMove = 0;
+		// if (delayRightMove == 2) {
+		// 	if (TILE_COL >=2) {
+		// 		moveMapRight();
+		// 	}
+		// 	delayRightMove = 0;
 			
-		}
+		// }
 
 		updateScreenLocations();
 
@@ -73,7 +73,7 @@ void initMode0() {
 
 	DMANow(3, WORLD_TILES, &CHARBLOCKBASE[0], WORLD_TILE_LENGTH/2);
 
-	initMap(0, 0);
+	initMap(0, 2);
 
 	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2); // fix
 
@@ -91,8 +91,9 @@ void buttonHandler() {
 		if (TILE_COL < WORLD_MAP_TILE_WIDTH - SCREEN_TILE_WIDTH) {
 			moving = 1;
 			dir = RIGHT;
-			TILE_COL += 2;
-			delayRightMove = 1;
+			// TILE_COL += 2;
+			// delayRightMove = 1;
+			moveMapRight();
 		}
 	}
 
@@ -100,7 +101,9 @@ void buttonHandler() {
 		if (TILE_COL > 0) {
 			moving = 1;
 			dir = LEFT;
+			
 			moveMapLeft();
+			//TILE_COL-=2;
 		}
 	}
 	if(BUTTON_HELD(BUTTON_DOWN)) {

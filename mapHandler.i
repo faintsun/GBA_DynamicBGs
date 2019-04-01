@@ -11,8 +11,10 @@ extern unsigned short WORLD_TILE_LENGTH;
 extern unsigned short WORLD_MAP_LENGTH;
 extern unsigned short WORLD_MAP_TILE_WIDTH;
 extern unsigned short WORLD_MAP_TILE_HEIGHT;
-extern unsigned short TILE_COL;
-extern unsigned short TILE_ROW;
+extern int TILE_COL;
+extern int TILE_ROW;
+extern int TILE_COL_OFFSET;
+extern int TILE_ROW_OFFSET;
 
 void initMap(int r, int c);
 void loadMap(const unsigned short*, const unsigned short, const unsigned short*, const unsigned short, unsigned short, unsigned short);
@@ -86,8 +88,10 @@ unsigned short WORLD_TILE_LENGTH;
 unsigned short WORLD_MAP_LENGTH;
 unsigned short WORLD_MAP_TILE_WIDTH;
 unsigned short WORLD_MAP_TILE_HEIGHT;
-unsigned short TILE_COL;
-unsigned short TILE_ROW;
+int TILE_COL;
+int TILE_ROW;
+int TILE_COL_OFFSET;
+int TILE_ROW_OFFSET;
 
 
 void loadMap(const unsigned short* tiles, const unsigned short tlen,
@@ -113,30 +117,68 @@ void initMap(int r, int c) {
  }
  TILE_ROW = r;
  TILE_COL = c;
+ TILE_ROW_OFFSET = 0;
+ TILE_COL_OFFSET = 0;
 }
 
 
 void moveMapLeft() {
 
+ TILE_COL_OFFSET -= 2;
+ TILE_COL -= 2;
 
- for (int i = 0; i < (160 / 8); i++) {
-  SCREEN_MAP[((i)*(32)+(TILE_COL - 2))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+(TILE_COL - 2))];
-  SCREEN_MAP[((i)*(32)+(TILE_COL - 1))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+(TILE_COL - 1))];
+ int temp_col_offset = 0;
+
+
+
+ if (TILE_COL_OFFSET < 0) {
+  temp_col_offset = 32 + TILE_COL_OFFSET;
+
+  for (int i = 0; i < (160 / 8); i++) {
+   SCREEN_MAP[((i)*(32)+(temp_col_offset))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+(TILE_COL))];
+   SCREEN_MAP[((i)*(32)+(temp_col_offset + 1))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+(TILE_COL + 1))];
+  }
+
+
+ } else {
+  for (int i = 0; i < (160 / 8); i++) {
+   SCREEN_MAP[((i)*(32)+(TILE_COL_OFFSET))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+(TILE_COL))];
+   SCREEN_MAP[((i)*(32)+(TILE_COL_OFFSET + 1))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+(TILE_COL + 1))];
+  }
  }
 
- TILE_COL -= 2;
  DMANow(3, SCREEN_MAP, &((screenblock *)0x6000000)[26], WORLD_MAP_LENGTH/2);
 
 }
 
+
 void moveMapRight() {
 
- for (int i = 0; i < (160 / 8); i++) {
-  SCREEN_MAP[((i)*(32)+(TILE_COL - 2))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+((240 / 8) + TILE_COL))];
-  SCREEN_MAP[((i)*(32)+(TILE_COL - 1))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+((240 / 8) + TILE_COL + 1))];
+ TILE_COL_OFFSET += 2;
+ TILE_COL += 2;
+
+ int temp_col_offset = 0;
+
+
+
+ if (TILE_COL_OFFSET <= 0) {
+  temp_col_offset = 32 + TILE_COL_OFFSET;
+
+  for (int i = 0; i < (160 / 8); i++) {
+  SCREEN_MAP[((i)*(32)+(temp_col_offset - 2))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+((240 / 8) + TILE_COL))];
+  SCREEN_MAP[((i)*(32)+(temp_col_offset - 1))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+((240 / 8) + TILE_COL + 1))];
+
+  }
+
+
+ } else {
+  for (int i = 0; i < (160 / 8); i++) {
+  SCREEN_MAP[((i)*(32)+(TILE_COL_OFFSET - 2))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+((240 / 8) + TILE_COL))];
+  SCREEN_MAP[((i)*(32)+(TILE_COL_OFFSET - 1))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+((240 / 8) + TILE_COL + 1))];
+
+  }
  }
-
-
+# 113 "mapHandler.c"
  DMANow(3, SCREEN_MAP, &((screenblock *)0x6000000)[26], WORLD_MAP_LENGTH/2);
 
 }
