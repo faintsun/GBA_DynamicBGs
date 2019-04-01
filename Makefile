@@ -1,4 +1,4 @@
-PRODUCT_NAME       = Project
+PRODUCT_NAME       = DynamicBG
 SRC            	   = $(wildcard *.c) $(wildcard Library/*.c) $(wildcard Maps/*.c)
 INC_DIR			   = Library
 DKPATH             = C:/devkitARM/bin
