@@ -59,8 +59,8 @@ void init() {
 	REG_DISPCTL = MODE0 | BG2_ENABLE;
 	REG_BG2CNT = CBB(0) | SBB(26) | BG_SIZE0 | COLOR256;
 
-	loadPalette(littlerootPal);
-	loadMap(littlerootTiles, littlerootTilesLen, littlerootMap, littlerootMapLen, 48, 44);
+	loadPalette(dewfordPal);
+	loadMap(dewfordTiles, dewfordTilesLen, dewfordMap, dewfordMapLen, 48, 44);
 
 	DMANow(3, WORLD_TILES, &CHARBLOCKBASE[0], WORLD_TILE_LENGTH/2);
 

@@ -14,6 +14,7 @@ int TILE_COL_OFFSET;					// how many column tiles we've moved since first drawin
 int TILE_ROW_OFFSET;					// how many row tiles we've moved since first drawing the map
 
 char moving;
+int tes;
 
 // Use this when entering a new area to load the area's tiles & map
 void loadMap(const unsigned short* tiles, const unsigned short tlen, 	// tiles of new area
