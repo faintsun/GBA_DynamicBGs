@@ -118,34 +118,51 @@ moveMapLeft:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	ldr	r2, .L16
-	ldr	r3, .L16+4
-	str	lr, [sp, #-4]!
-	ldrh	lr, [r2]
-	ldr	r2, .L16+8
-	lsl	r0, r0, #1
-	add	ip, r3, #1280
-	add	ip, ip, r0
-	add	r3, r0, r3
-	lsl	lr, lr, #1
-	add	r0, r0, r2
+	push	{r4, r5, r6, lr}
+	ldr	r4, .L16
+	ldr	r1, .L16+4
+	ldr	r3, .L16+8
+	ldrh	r5, [r4]
+	ldrh	ip, [r1]
+	ldr	r2, .L16+12
+	lsl	r1, r5, #1
+	add	lr, r3, #1280
+	add	r2, r1, r2
+	add	r3, r1, r3
+	add	lr, lr, r1
+	lsl	ip, ip, #1
 .L13:
-	ldrh	r1, [r0, #-4]
-	ldrh	r2, [r0, #-2]
-	strh	r1, [r3, #-4]	@ movhi
-	strh	r2, [r3, #-2]	@ movhi
+	ldrh	r0, [r2, #-4]
+	ldrh	r1, [r2, #-2]
+	strh	r0, [r3, #-4]	@ movhi
+	strh	r1, [r3, #-2]	@ movhi
 	add	r3, r3, #64
-	cmp	r3, ip
-	add	r0, r0, lr
+	cmp	r3, lr
+	add	r2, r2, ip
 	bne	.L13
-	ldr	lr, [sp], #4
+	ldr	r3, .L16+16
+	ldrh	r3, [r3]
+	sub	r5, r5, #2
+	strh	r5, [r4]	@ movhi
+	lsr	r3, r3, #1
+	ldr	r4, .L16+20
+	ldr	r2, .L16+24
+	ldr	r1, .L16+8
+	mov	r0, #3
+	mov	lr, pc
+	bx	r4
+	pop	{r4, r5, r6, lr}
 	bx	lr
 .L17:
 	.align	2
 .L16:
+	.word	TILE_COL
 	.word	WORLD_MAP_TILE_WIDTH
 	.word	SCREEN_MAP
 	.word	WORLD_MAP
+	.word	WORLD_MAP_LENGTH
+	.word	DMANow
+	.word	100716544
 	.size	moveMapLeft, .-moveMapLeft
 	.align	2
 	.global	moveMapRight
@@ -157,14 +174,14 @@ moveMapRight:
 	@ Function supports interworking.
 	@ args = 0, pretend = 0, frame = 0
 	@ frame_needed = 0, uses_anonymous_args = 0
-	push	{r4, r5, r6, lr}
-	ldr	r4, .L22
+	ldr	r3, .L22
 	ldr	r1, .L22+4
+	push	{r4, lr}
+	ldrh	lr, [r3]
 	ldr	r3, .L22+8
-	ldrh	r5, [r4]
 	ldrh	ip, [r1]
 	ldr	r2, .L22+12
-	lsl	r1, r5, #1
+	lsl	r1, lr, #1
 	add	lr, r3, #1280
 	add	r2, r1, r2
 	add	r3, r1, r3
@@ -181,16 +198,14 @@ moveMapRight:
 	bne	.L19
 	ldr	r3, .L22+16
 	ldrh	r3, [r3]
-	add	r5, r5, #2
-	strh	r5, [r4]	@ movhi
-	lsr	r3, r3, #1
 	ldr	r4, .L22+20
 	ldr	r2, .L22+24
+	lsr	r3, r3, #1
 	ldr	r1, .L22+8
 	mov	r0, #3
 	mov	lr, pc
 	bx	r4
-	pop	{r4, r5, r6, lr}
+	pop	{r4, lr}
 	bx	lr
 .L23:
 	.align	2

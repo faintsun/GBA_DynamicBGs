@@ -116,25 +116,27 @@ void initMap(int r, int c) {
 }
 
 
-void moveMapLeft(int tileCol) {
+void moveMapLeft() {
 
 
  for (int i = 0; i < (160 / 8); i++) {
-  SCREEN_MAP[((i)*(32)+(tileCol - 2))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+(tileCol - 2))];
-  SCREEN_MAP[((i)*(32)+(tileCol - 1))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+(tileCol - 1))];
+  SCREEN_MAP[((i)*(32)+(TILE_COL - 2))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+(TILE_COL - 2))];
+  SCREEN_MAP[((i)*(32)+(TILE_COL - 1))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+(TILE_COL - 1))];
  }
+
+ TILE_COL -= 2;
+ DMANow(3, SCREEN_MAP, &((screenblock *)0x6000000)[26], WORLD_MAP_LENGTH/2);
+
 }
 
 void moveMapRight() {
 
-
-   for (int i = 0; i < (160 / 8); i++) {
-    SCREEN_MAP[((i)*(32)+(TILE_COL - 2))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+((240 / 8) + TILE_COL))];
-    SCREEN_MAP[((i)*(32)+(TILE_COL - 1))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+((240 / 8) + TILE_COL + 1))];
-   }
-   TILE_COL += 2;
+ for (int i = 0; i < (160 / 8); i++) {
+  SCREEN_MAP[((i)*(32)+(TILE_COL - 2))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+((240 / 8) + TILE_COL))];
+  SCREEN_MAP[((i)*(32)+(TILE_COL - 1))] = WORLD_MAP[((i)*(WORLD_MAP_TILE_WIDTH)+((240 / 8) + TILE_COL + 1))];
+ }
 
 
-  DMANow(3, SCREEN_MAP, &((screenblock *)0x6000000)[26], WORLD_MAP_LENGTH/2);
+ DMANow(3, SCREEN_MAP, &((screenblock *)0x6000000)[26], WORLD_MAP_LENGTH/2);
 
 }

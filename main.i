@@ -64,16 +64,6 @@ typedef struct {
     int col;
 } Sprite;
 # 4 "main.c" 2
-# 1 "house.h" 1
-# 22 "house.h"
-extern const unsigned short houseTiles[896];
-
-
-extern const unsigned short houseMap[1024];
-
-
-extern const unsigned short housePal[256];
-# 5 "main.c" 2
 # 1 "mapHandler.h" 1
 
 extern unsigned short SCREEN_MAP[1024];
@@ -90,29 +80,10 @@ void initMap(int r, int c);
 void loadMap(const unsigned short*, const unsigned short, const unsigned short*, const unsigned short, unsigned short, unsigned short);
 void moveMapLeft();
 void moveMapRight();
-# 6 "main.c" 2
+# 5 "main.c" 2
 
 
-# 1 "bg1.h" 1
-# 22 "bg1.h"
-extern const unsigned short bg1Tiles[176];
 
-
-extern const unsigned short bg1Map[1024];
-
-
-extern const unsigned short bg1Pal[16];
-# 9 "main.c" 2
-# 1 "bg2.h" 1
-# 22 "bg2.h"
-extern const unsigned short bg2Tiles[48];
-
-
-extern const unsigned short bg2Map[4096];
-
-
-extern const unsigned short bg2Pal[16];
-# 10 "main.c" 2
 # 1 "littleroot.h" 1
 # 22 "littleroot.h"
 extern const unsigned short littlerootTiles[6592];
@@ -122,17 +93,8 @@ extern const unsigned short littlerootMap[2112];
 
 
 extern const unsigned short littlerootPal[256];
-# 11 "main.c" 2
-# 1 "littleroot256.h" 1
-# 22 "littleroot256.h"
-extern const unsigned short littleroot256Tiles[4800];
+# 9 "main.c" 2
 
-
-extern const unsigned short littleroot256Map[1024];
-
-
-extern const unsigned short littleroot256Pal[256];
-# 12 "main.c" 2
 
 
 unsigned int buttons;
@@ -170,15 +132,12 @@ int main() {
 
 
   if (delayRightMove == 2) {
-  if (TILE_COL >=2) {
-   for (int i = 0; i < (160 / 8); i++) {
-    SCREEN_MAP[((i)*(32)+(TILE_COL - 2))] = littlerootMap[((i)*(WORLD_MAP_TILE_WIDTH)+((240 / 8) + TILE_COL))];
-    SCREEN_MAP[((i)*(32)+(TILE_COL - 1))] = littlerootMap[((i)*(WORLD_MAP_TILE_WIDTH)+((240 / 8) + TILE_COL + 1))];
+   if (TILE_COL >=2) {
+    moveMapRight();
    }
+   delayRightMove = 0;
+
   }
-  delayRightMove = 0;
-  DMANow(3, SCREEN_MAP, &((screenblock *)0x6000000)[26], 2048/2);
- }
 
   updateScreenLocations();
 
@@ -223,23 +182,13 @@ void buttonHandler() {
    TILE_COL += 2;
    delayRightMove = 1;
   }
-
-
-
  }
+
  if((~(*(volatile unsigned int *)0x04000130) & ((1<<5)))) {
   if (TILE_COL > 0) {
    moving = 1;
    dir = LEFT;
-
-
-   moveMapLeft(TILE_COL);
-
-   TILE_COL -= 2;
-
-  DMANow(3, SCREEN_MAP, &((screenblock *)0x6000000)[26], 2048/2);
-
-
+   moveMapLeft();
   }
  }
  if((~(*(volatile unsigned int *)0x04000130) & ((1<<7)))) {
@@ -247,8 +196,8 @@ void buttonHandler() {
   dir = DOWN;
   TILE_ROW++;
   if (TILE_ROW > 6) {
-   DMANow(3, &littlerootMap[((160/8 + TILE_ROW)*(32)+(0))], &SCREEN_MAP[((TILE_ROW - 6)*(32)+(0))], 32);
-   DMANow(3, SCREEN_MAP, &((screenblock *)0x6000000)[26], 4224/2);
+   DMANow(3, &WORLD_MAP[((160/8 + TILE_ROW)*(32)+(0))], &SCREEN_MAP[((TILE_ROW - 6)*(32)+(0))], 32);
+   DMANow(3, SCREEN_MAP, &((screenblock *)0x6000000)[26], WORLD_MAP_LENGTH/2);
   }
  }
  if((~(*(volatile unsigned int *)0x04000130) & ((1<<6)))) {

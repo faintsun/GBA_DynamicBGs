@@ -1,5 +1,5 @@
 PRODUCT_NAME       = Project
-SOURCES            = main.c myLib.c bg1.c house.c bg2.c littleroot.c littleroot256.c mapHandler.c
+SOURCES            = main.c myLib.c littleroot.c mapHandler.c
 DKPATH             = C:/devkitARM/bin
 CCPATH             = C:/cygwin64/bin
 VBASIM             = C:/vba/VisualBoyAdvance.exe

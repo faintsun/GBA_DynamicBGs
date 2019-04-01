@@ -1,14 +1,12 @@
 // code
 #include "main.h"
 #include "myLib.h"
-#include "house.h"
 #include "mapHandler.h"
 
 // backgrounds
-#include "bg1.h"
-#include "bg2.h"
+
 #include "littleroot.h"
-#include "littleroot256.h"
+
 
 // variables
 unsigned int buttons;
@@ -46,15 +44,12 @@ int main() {
 
 
 		if (delayRightMove == 2) {
-		if (TILE_COL >=2) {
-			for (int i = 0; i < SCREEN_TILE_HEIGHT; i++) {
-				SCREEN_MAP[OFFSET(i, TILE_COL - 2, 32)] = littlerootMap[OFFSET(i, SCREEN_TILE_WIDTH + TILE_COL, WORLD_MAP_TILE_WIDTH)];
-				SCREEN_MAP[OFFSET(i, TILE_COL - 1, 32)] = littlerootMap[OFFSET(i, SCREEN_TILE_WIDTH + TILE_COL + 1, WORLD_MAP_TILE_WIDTH)];
+			if (TILE_COL >=2) {
+				moveMapRight();
 			}
+			delayRightMove = 0;
+			
 		}
-		delayRightMove = 0;
-		DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], littleroot256MapLen/2);
-	}
 
 		updateScreenLocations();
 
@@ -99,23 +94,13 @@ void buttonHandler() {
 			TILE_COL += 2;
 			delayRightMove = 1;
 		}
-
-
-
 	}
+
 	if(BUTTON_HELD(BUTTON_LEFT)) {
 		if (TILE_COL > 0) {
 			moving = 1;
 			dir = LEFT;
-			
-
-			moveMapLeft(TILE_COL);
-
-			TILE_COL -= 2;
-
-		DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], littleroot256MapLen/2);
-
-
+			moveMapLeft();
 		}
 	}
 	if(BUTTON_HELD(BUTTON_DOWN)) {
@@ -123,8 +108,8 @@ void buttonHandler() {
 		dir = DOWN;
 		TILE_ROW++;
 		if (TILE_ROW > 6) {
-			DMANow(3, &littlerootMap[OFFSET(SCREENHEIGHT/8 + TILE_ROW, 0, 32)], &SCREEN_MAP[OFFSET(TILE_ROW - 6, 0, 32)], 32);
-			DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], littlerootMapLen/2);
+			DMANow(3, &WORLD_MAP[OFFSET(SCREENHEIGHT/8 + TILE_ROW, 0, 32)], &SCREEN_MAP[OFFSET(TILE_ROW - 6, 0, 32)], 32);
+			DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2);
 		}
 	}
 	if(BUTTON_HELD(BUTTON_UP)) {

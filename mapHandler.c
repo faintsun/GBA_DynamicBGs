@@ -38,27 +38,27 @@ void initMap(int r, int c) {
 }
 
 // draw 2 cols worth of tiles to the left 
-void moveMapLeft(int tileCol) {
+void moveMapLeft() {
 
 	
 	for (int i = 0; i < SCREEN_TILE_HEIGHT; i++) {
-		SCREEN_MAP[OFFSET(i, tileCol - 2, 32)] = WORLD_MAP[OFFSET(i, tileCol - 2, WORLD_MAP_TILE_WIDTH)];
-		SCREEN_MAP[OFFSET(i, tileCol - 1, 32)] = WORLD_MAP[OFFSET(i, tileCol - 1, WORLD_MAP_TILE_WIDTH)];
+		SCREEN_MAP[OFFSET(i, TILE_COL - 2, 32)] = WORLD_MAP[OFFSET(i, TILE_COL - 2, WORLD_MAP_TILE_WIDTH)];
+		SCREEN_MAP[OFFSET(i, TILE_COL - 1, 32)] = WORLD_MAP[OFFSET(i, TILE_COL - 1, WORLD_MAP_TILE_WIDTH)];
 	}
+
+	TILE_COL -= 2;
+	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2);
+
 }
 
 void moveMapRight() {
-	//if (delayRightMove == 2) {
-		//if (TILE_COL >=2) {
-			for (int i = 0; i < SCREEN_TILE_HEIGHT; i++) {
-				SCREEN_MAP[OFFSET(i, TILE_COL - 2, 32)] = WORLD_MAP[OFFSET(i, SCREEN_TILE_WIDTH + TILE_COL, WORLD_MAP_TILE_WIDTH)];
-				SCREEN_MAP[OFFSET(i, TILE_COL - 1, 32)] = WORLD_MAP[OFFSET(i, SCREEN_TILE_WIDTH + TILE_COL + 1, WORLD_MAP_TILE_WIDTH)];
-			}
-			TILE_COL += 2;
-		//}
-		//delayRightMove = 0;
-		DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2);
-	//}
+
+	for (int i = 0; i < SCREEN_TILE_HEIGHT; i++) {
+		SCREEN_MAP[OFFSET(i, TILE_COL - 2, 32)] = WORLD_MAP[OFFSET(i, SCREEN_TILE_WIDTH + TILE_COL, WORLD_MAP_TILE_WIDTH)];
+		SCREEN_MAP[OFFSET(i, TILE_COL - 1, 32)] = WORLD_MAP[OFFSET(i, SCREEN_TILE_WIDTH + TILE_COL + 1, WORLD_MAP_TILE_WIDTH)];
+	}
+
+	//TILE_COL += 2;
+	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2);
+	
 }
-
-
