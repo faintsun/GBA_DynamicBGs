@@ -47,6 +47,9 @@ loadMap:
 	mov	r0, #3
 	mov	lr, pc
 	bx	r4
+	mov	r2, #0
+	ldr	r3, .L4+28
+	strb	r2, [r3]
 	pop	{r4, r5, r6, r7, r8, lr}
 	bx	lr
 .L5:
@@ -59,6 +62,7 @@ loadMap:
 	.word	DMANow
 	.word	WORLD_TILES
 	.word	WORLD_MAP
+	.word	moving
 	.size	loadMap, .-loadMap
 	.align	2
 	.global	initMap
@@ -263,6 +267,33 @@ moveMapRight:
 	.word	DMANow
 	.word	100716544
 	.size	moveMapRight, .-moveMapRight
+	.align	2
+	.global	moveMapUp
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	moveMapUp, %function
+moveMapUp:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	@ link register save eliminated.
+	bx	lr
+	.size	moveMapUp, .-moveMapUp
+	.align	2
+	.global	moveMapDown
+	.syntax unified
+	.arm
+	.fpu softvfp
+	.type	moveMapDown, %function
+moveMapDown:
+	@ Function supports interworking.
+	@ args = 0, pretend = 0, frame = 0
+	@ frame_needed = 0, uses_anonymous_args = 0
+	@ link register save eliminated.
+	bx	lr
+	.size	moveMapDown, .-moveMapDown
+	.comm	moving,1,1
 	.comm	TILE_ROW_OFFSET,4,4
 	.comm	TILE_COL_OFFSET,4,4
 	.comm	TILE_ROW,4,4

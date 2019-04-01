@@ -10,11 +10,13 @@ unsigned short WORLD_MAP_TILE_WIDTH;	// how many tiles wide our area map is
 unsigned short WORLD_MAP_TILE_HEIGHT;	// how many tiles tall our area map is
 int TILE_COL;							// our current leftmost col position on the area map
 int TILE_ROW;							// our current topmost row position on the area map
-int TILE_COL_OFFSET;
-int TILE_ROW_OFFSET;
+int TILE_COL_OFFSET;					// how many column tiles we've moved since first drawing the map
+int TILE_ROW_OFFSET;					// how many row tiles we've moved since first drawing the map
+
+char moving;
 
 // Use this when entering a new area to load the area's tiles & map
-void loadMap(const unsigned short* tiles, const unsigned short tlen, // tiles of new area
+void loadMap(const unsigned short* tiles, const unsigned short tlen, 	// tiles of new area
 				const unsigned short* map, const unsigned short mlen,   // map of new area
 				unsigned short tilew, unsigned short tileh) {			// witdh and height of area in 8x8 tiles
 
@@ -24,6 +26,8 @@ void loadMap(const unsigned short* tiles, const unsigned short tlen, // tiles of
 	WORLD_MAP_TILE_HEIGHT = tileh;
 	DMANow(3, tiles, WORLD_TILES, tlen/2); 
 	DMANow(3, map, WORLD_MAP, mlen/2);
+
+	moving = 0;
 	// Now we can use the generic WORLD_TILES and WORLD_MAP to draw everything
 
 }
@@ -49,7 +53,7 @@ void moveMapLeft() {
 
 	int temp_col_offset = 0;
 
-	// make sure not drawing in a negative column
+	// make sure we're not drawing in a negative column
 	// if < 0, wrap around to draw else where.
 	if (TILE_COL_OFFSET < 0) {
 		temp_col_offset = 32 + TILE_COL_OFFSET;
@@ -79,7 +83,7 @@ void moveMapRight() {
 
 	int temp_col_offset = 0;
 
-	// make sure not drawing in a negative column
+	// make sure we're not drawing in a negative column
 	// if < 0, wrap around to draw else where.
 	if (TILE_COL_OFFSET <= 0) {
 		temp_col_offset = 32 + TILE_COL_OFFSET;
@@ -101,4 +105,12 @@ void moveMapRight() {
 
 	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2);
 	
+}
+
+void moveMapUp() {
+	return;
+}
+
+void moveMapDown() {
+	return;
 }

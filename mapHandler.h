@@ -11,7 +11,12 @@ extern int TILE_ROW;
 extern int TILE_COL_OFFSET;
 extern int TILE_ROW_OFFSET;
 
+extern char moving;
+enum {LEFT, RIGHT, DOWN, UP};
+
 void initMap(int r, int c);
 void loadMap(const unsigned short*, const unsigned short, const unsigned short*, const unsigned short, unsigned short, unsigned short);
 void moveMapLeft();
 void moveMapRight();
+void moveMapUp();
+void moveMapDown();

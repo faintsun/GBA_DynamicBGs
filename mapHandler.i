@@ -16,10 +16,15 @@ extern int TILE_ROW;
 extern int TILE_COL_OFFSET;
 extern int TILE_ROW_OFFSET;
 
+extern char moving;
+enum {LEFT, RIGHT, DOWN, UP};
+
 void initMap(int r, int c);
 void loadMap(const unsigned short*, const unsigned short, const unsigned short*, const unsigned short, unsigned short, unsigned short);
 void moveMapLeft();
 void moveMapRight();
+void moveMapUp();
+void moveMapDown();
 # 2 "mapHandler.c" 2
 # 1 "myLib.h" 1
 
@@ -93,6 +98,8 @@ int TILE_ROW;
 int TILE_COL_OFFSET;
 int TILE_ROW_OFFSET;
 
+char moving;
+
 
 void loadMap(const unsigned short* tiles, const unsigned short tlen,
     const unsigned short* map, const unsigned short mlen,
@@ -104,6 +111,8 @@ void loadMap(const unsigned short* tiles, const unsigned short tlen,
  WORLD_MAP_TILE_HEIGHT = tileh;
  DMANow(3, tiles, WORLD_TILES, tlen/2);
  DMANow(3, map, WORLD_MAP, mlen/2);
+
+ moving = 0;
 
 
 }
@@ -178,7 +187,15 @@ void moveMapRight() {
 
   }
  }
-# 113 "mapHandler.c"
+
  DMANow(3, SCREEN_MAP, &((screenblock *)0x6000000)[26], WORLD_MAP_LENGTH/2);
 
+}
+
+void moveMapUp() {
+ return;
+}
+
+void moveMapDown() {
+ return;
 }

@@ -64,6 +64,7 @@ typedef struct {
     int col;
 } Sprite;
 # 4 "main.c" 2
+
 # 1 "mapHandler.h" 1
 
 extern unsigned short SCREEN_MAP[1024];
@@ -78,11 +79,16 @@ extern int TILE_ROW;
 extern int TILE_COL_OFFSET;
 extern int TILE_ROW_OFFSET;
 
+extern char moving;
+enum {LEFT, RIGHT, DOWN, UP};
+
 void initMap(int r, int c);
 void loadMap(const unsigned short*, const unsigned short, const unsigned short*, const unsigned short, unsigned short, unsigned short);
 void moveMapLeft();
 void moveMapRight();
-# 5 "main.c" 2
+void moveMapUp();
+void moveMapDown();
+# 6 "main.c" 2
 
 
 
@@ -95,7 +101,7 @@ extern const unsigned short littlerootMap[2112];
 
 
 extern const unsigned short littlerootPal[256];
-# 9 "main.c" 2
+# 10 "main.c" 2
 
 
 
@@ -104,34 +110,33 @@ unsigned int oldButtons;
 
 int hOff = 0;
 int vOff = 0;
-int moving = 0;
+
+
 int dir = 0;
 int dirTimer = 16;
-enum {LEFT, RIGHT, DOWN, UP};
 
-int delayRightMove = 0;
+
 
 extern const unsigned short* palette;
 
 
 
 
-void initMode0();
+void (*nextMove)();
+
+void init();
 void updateScreenLocations();
 void buttonHandler();
 void cameraHandler();
 
 int main() {
- initMode0();
+ init();
 
  while(1) {
 
-  if (!moving) {
-   buttonHandler();
-  } else {
-   cameraHandler();
-  }
-# 54 "main.c"
+  buttonHandler();
+  cameraHandler();
+
   updateScreenLocations();
 
   waitForVblank();
@@ -144,7 +149,7 @@ int main() {
 
 
 
-void initMode0() {
+void init() {
 
  *(unsigned short *)0x4000000 = 0 | (1<<10);
  *(volatile unsigned short*)0x400000C = 0 << 2 | 26 << 8 | 0<<14 | 1 << 7;
@@ -154,7 +159,7 @@ void initMode0() {
 
  DMANow(3, WORLD_TILES, &((charblock *)0x6000000)[0], WORLD_TILE_LENGTH/2);
 
- initMap(0, 2);
+ initMap(0, 4);
 
  DMANow(3, SCREEN_MAP, &((screenblock *)0x6000000)[26], WORLD_MAP_LENGTH/2);
 
@@ -167,40 +172,25 @@ void buttonHandler() {
  oldButtons = buttons;
  buttons = *(volatile unsigned int *)0x04000130;
 
- if((~(*(volatile unsigned int *)0x04000130) & ((1<<4)))) {
+ if (!nextMove) {
+  if((~(*(volatile unsigned int *)0x04000130) & ((1<<4)))) {
 
-  if (TILE_COL < WORLD_MAP_TILE_WIDTH - (240 / 8)) {
-   moving = 1;
-   dir = RIGHT;
-
-
-   moveMapRight();
+   if (TILE_COL < WORLD_MAP_TILE_WIDTH - (240 / 8)) {
+    nextMove = moveMapRight;
+   }
   }
- }
 
- if((~(*(volatile unsigned int *)0x04000130) & ((1<<5)))) {
-  if (TILE_COL > 0) {
-   moving = 1;
-   dir = LEFT;
-
-   moveMapLeft();
+  if((~(*(volatile unsigned int *)0x04000130) & ((1<<5)))) {
+   if (TILE_COL > 0) {
+    nextMove = moveMapLeft;
+    nextMove();
+   }
+  }
+  if((~(*(volatile unsigned int *)0x04000130) & ((1<<7)))) {
 
   }
- }
- if((~(*(volatile unsigned int *)0x04000130) & ((1<<7)))) {
-  moving = 1;
-  dir = DOWN;
-  TILE_ROW++;
-  if (TILE_ROW > 6) {
-   DMANow(3, &WORLD_MAP[((160/8 + TILE_ROW)*(32)+(0))], &SCREEN_MAP[((TILE_ROW - 6)*(32)+(0))], 32);
-   DMANow(3, SCREEN_MAP, &((screenblock *)0x6000000)[26], WORLD_MAP_LENGTH/2);
-  }
- }
- if((~(*(volatile unsigned int *)0x04000130) & ((1<<6)))) {
-  if (TILE_ROW > 0) {
-   moving = 1;
-   dir = UP;
-   TILE_ROW--;
+  if((~(*(volatile unsigned int *)0x04000130) & ((1<<6)))) {
+
   }
  }
 
@@ -209,21 +199,25 @@ void buttonHandler() {
 void cameraHandler() {
 
 
+ if (nextMove) {
+  dirTimer--;
+  if (nextMove == moveMapLeft) {
+   hOff--;
+  } else if (nextMove == moveMapRight) {
+   hOff++;
+  } else if (nextMove == moveMapDown) {
+   vOff++;
+  } else if (nextMove == moveMapUp) {
+   vOff--;
+  }
+  if (dirTimer < 1) {
 
- dirTimer--;
- if (dir == LEFT) {
-  hOff--;
- } else if (dir == RIGHT) {
-  hOff++;
- } else if (dir == DOWN) {
-  vOff++;
- } else if (dir == UP) {
-  vOff--;
- }
- if (dirTimer < 1) {
-  dirTimer = 16;
-  delayRightMove = 2;
-  moving = 0;
+   dirTimer = 16;
+   if (nextMove == moveMapRight) {
+    nextMove();
+   }
+   nextMove = 0;
+  }
  }
 }
 

@@ -1,6 +1,7 @@
 // code
 #include "main.h"
 #include "myLib.h"
+
 #include "mapHandler.h"
 
 // backgrounds
@@ -14,42 +15,32 @@ unsigned int oldButtons;
 
 int hOff = 0;
 int vOff = 0;
-int moving = 0;
+
+
 int dir = 0;
 int dirTimer = 16;
-enum {LEFT, RIGHT, DOWN, UP};
 
-int delayRightMove = 0;
+
 
 extern const unsigned short* palette;
 
 
 
 // prototypes
-void initMode0();
+void (*nextMove)();
+
+void init();
 void updateScreenLocations();
 void buttonHandler();
 void cameraHandler();
 
 int main() {
-	initMode0();
+	init();
 
 	while(1) {
 
-		if (!moving) {
-			buttonHandler();
-		} else {
-			cameraHandler();
-		}
-
-
-		// if (delayRightMove == 2) {
-		// 	if (TILE_COL >=2) {
-		// 		moveMapRight();
-		// 	}
-		// 	delayRightMove = 0;
-			
-		// }
+		buttonHandler();
+		cameraHandler();
 
 		updateScreenLocations();
 
@@ -63,7 +54,7 @@ int main() {
 
 
 
-void initMode0() {
+void init() {
 
 	REG_DISPCTL = MODE0 | BG2_ENABLE;
 	REG_BG2CNT = CBB(0) | SBB(26) | BG_SIZE0 | COLOR256;
@@ -73,7 +64,7 @@ void initMode0() {
 
 	DMANow(3, WORLD_TILES, &CHARBLOCKBASE[0], WORLD_TILE_LENGTH/2);
 
-	initMap(0, 2);
+	initMap(0, 4);
 
 	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2); // fix
 
@@ -86,40 +77,25 @@ void buttonHandler() {
 	oldButtons = buttons;
 	buttons = BUTTONS;
 
-	if(BUTTON_HELD(BUTTON_RIGHT)) {
-		
-		if (TILE_COL < WORLD_MAP_TILE_WIDTH - SCREEN_TILE_WIDTH) {
-			moving = 1;
-			dir = RIGHT;
-			// TILE_COL += 2;
-			// delayRightMove = 1;
-			moveMapRight();
-		}
-	}
-
-	if(BUTTON_HELD(BUTTON_LEFT)) {
-		if (TILE_COL > 0) {
-			moving = 1;
-			dir = LEFT;
+	if (!nextMove) {
+		if(BUTTON_HELD(BUTTON_RIGHT)) {
 			
-			moveMapLeft();
-			//TILE_COL-=2;
+			if (TILE_COL < WORLD_MAP_TILE_WIDTH - SCREEN_TILE_WIDTH) {
+				nextMove = moveMapRight;
+			}
 		}
-	}
-	if(BUTTON_HELD(BUTTON_DOWN)) {
-		moving = 1;
-		dir = DOWN;
-		TILE_ROW++;
-		if (TILE_ROW > 6) {
-			DMANow(3, &WORLD_MAP[OFFSET(SCREENHEIGHT/8 + TILE_ROW, 0, 32)], &SCREEN_MAP[OFFSET(TILE_ROW - 6, 0, 32)], 32);
-			DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2);
+
+		if(BUTTON_HELD(BUTTON_LEFT)) {
+			if (TILE_COL > 0) {
+				nextMove = moveMapLeft;
+				nextMove();
+			}
 		}
-	}
-	if(BUTTON_HELD(BUTTON_UP)) {
-		if (TILE_ROW > 0) {
-			moving = 1;
-			dir = UP;
-			TILE_ROW--;
+		if(BUTTON_HELD(BUTTON_DOWN)) {
+
+		}
+		if(BUTTON_HELD(BUTTON_UP)) {
+
 		}
 	}
 
@@ -128,21 +104,25 @@ void buttonHandler() {
 void cameraHandler() {
 
 
-	
-	dirTimer--;
-	if (dir == LEFT) {
-		hOff--;
-	} else if (dir == RIGHT) {
-		hOff++;
-	} else if (dir == DOWN) {
-		vOff++;
-	} else if (dir == UP) {
-		vOff--;
-	}
-	if (dirTimer < 1) {
-		dirTimer = 16;
-		delayRightMove = 2;
-		moving = 0;
+	if (nextMove) {
+		dirTimer--;
+		if (nextMove == moveMapLeft) {
+			hOff--;
+		} else if (nextMove == moveMapRight) {
+			hOff++;
+		} else if (nextMove == moveMapDown) {
+			vOff++;
+		} else if (nextMove == moveMapUp) {
+			vOff--;
+		}
+		if (dirTimer < 1) {
+
+			dirTimer = 16;
+			if (nextMove == moveMapRight) {
+				nextMove();
+			}
+			nextMove = 0;
+		}
 	}
 }
 
