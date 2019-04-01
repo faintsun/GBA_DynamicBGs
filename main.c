@@ -1,12 +1,12 @@
+// code
 #include "main.h"
-
-// library
 #include "Library/myLib.h"
+
 #include "Library/mapHandler.h"
 
-// maps
+// backgrounds
+
 #include "Maps/littleroot.h"
-#include "Maps/dewford.h"
 
 
 // variables
@@ -59,14 +59,14 @@ void init() {
 	REG_DISPCTL = MODE0 | BG2_ENABLE;
 	REG_BG2CNT = CBB(0) | SBB(26) | BG_SIZE0 | COLOR256;
 
-	loadPalette(dewfordPal);
-	loadMap(dewfordTiles, dewfordTilesLen, dewfordMap, dewfordMapLen, 48, 44);
+	loadPalette(littlerootPal);
+	loadMap(littlerootTiles, littlerootTilesLen, littlerootMap, littlerootMapLen, 48, 44);
 
 	DMANow(3, WORLD_TILES, &CHARBLOCKBASE[0], WORLD_TILE_LENGTH/2);
 
-	initMap(0, 4);
+	initMap(2, 0);
 
-	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2); 
+	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2); // fix
 
 
 }
@@ -79,7 +79,6 @@ void buttonHandler() {
 
 	if (!nextMove) {
 		if(BUTTON_HELD(BUTTON_RIGHT)) {
-			
 			if (TILE_COL < WORLD_MAP_TILE_WIDTH - SCREEN_TILE_WIDTH) {
 				nextMove = moveMapRight;
 			}
@@ -92,9 +91,16 @@ void buttonHandler() {
 			}
 		}
 		if(BUTTON_HELD(BUTTON_DOWN)) {
-
+			if (TILE_ROW < WORLD_MAP_TILE_HEIGHT - SCREEN_TILE_HEIGHT) {
+				nextMove = moveMapDown;
+				nextMove();
+			}
 		}
 		if(BUTTON_HELD(BUTTON_UP)) {
+			if (TILE_ROW > 0) {
+				nextMove = moveMapUp;
+				nextMove();
+			}
 
 		}
 	}
