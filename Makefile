@@ -1,10 +1,12 @@
 PRODUCT_NAME       = Project
-SOURCES            = main.c myLib.c littleroot.c mapHandler.c
+SRC            	   = $(wildcard *.c) $(wildcard Library/*.c) $(wildcard Maps/*.c)
+INC_DIR			   = Library
 DKPATH             = C:/devkitARM/bin
 CCPATH             = C:/cygwin64/bin
 VBASIM             = C:/vba/VisualBoyAdvance.exe
 FIND               = find
 COPY               = cp -r
+
 
 # --- File Names
 ELF_NAME           = $(PRODUCT_NAME).elf
@@ -38,7 +40,7 @@ GBAFIX             = $(DKPATH)/gbafix
 # --- Delete
 RM                 = rm -f
 
-OBJECTS = $(SOURCES:.c=.o)
+OBJECTS = $(SRC:.c=.o) 
 
 
 # --- Main build target

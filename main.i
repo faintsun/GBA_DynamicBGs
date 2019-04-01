@@ -2,15 +2,16 @@
 # 1 "<built-in>"
 # 1 "<command-line>"
 # 1 "main.c"
-
 # 1 "main.h" 1
-# 3 "main.c" 2
-# 1 "myLib.h" 1
+# 2 "main.c" 2
+
+
+# 1 "Library/myLib.h" 1
 
 
 
 typedef unsigned short u16;
-# 46 "myLib.h"
+# 46 "Library/myLib.h"
 extern unsigned short *videoBuffer;
 
 extern unsigned short *frontBuffer;
@@ -29,10 +30,10 @@ void setPixel(int, int, unsigned short);
 
 
 void drawBackgroundImage3(const unsigned short * image);
-# 84 "myLib.h"
+# 84 "Library/myLib.h"
 extern unsigned int oldButtons;
 extern unsigned int buttons;
-# 94 "myLib.h"
+# 94 "Library/myLib.h"
 void DMANow(int channel, volatile const void* source, volatile const void* destination, unsigned int control);
 
 
@@ -48,10 +49,10 @@ typedef volatile struct
 } DMA;
 
 extern DMA *dma;
-# 223 "myLib.h"
+# 223 "Library/myLib.h"
 typedef struct { u16 tileimg[8192]; } charblock;
 typedef struct { u16 tilemap[1024]; } screenblock;
-# 281 "myLib.h"
+# 281 "Library/myLib.h"
 typedef struct{
     unsigned short attr0;
     unsigned short attr1;
@@ -63,9 +64,8 @@ typedef struct {
     int row;
     int col;
 } Sprite;
-# 4 "main.c" 2
-
-# 1 "mapHandler.h" 1
+# 5 "main.c" 2
+# 1 "Library/mapHandler.h" 1
 
 extern unsigned short SCREEN_MAP[1024];
 extern unsigned short WORLD_TILES[8000];
@@ -91,9 +91,8 @@ void moveMapDown();
 # 6 "main.c" 2
 
 
-
-# 1 "littleroot.h" 1
-# 22 "littleroot.h"
+# 1 "Maps/littleroot.h" 1
+# 22 "Maps/littleroot.h"
 extern const unsigned short littlerootTiles[6592];
 
 
@@ -101,6 +100,16 @@ extern const unsigned short littlerootMap[2112];
 
 
 extern const unsigned short littlerootPal[256];
+# 9 "main.c" 2
+# 1 "Maps/dewford.h" 1
+# 22 "Maps/dewford.h"
+extern const unsigned short dewfordTiles[7360];
+
+
+extern const unsigned short dewfordMap[2112];
+
+
+extern const unsigned short dewfordPal[256];
 # 10 "main.c" 2
 
 

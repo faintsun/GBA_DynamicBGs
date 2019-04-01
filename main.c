@@ -1,12 +1,12 @@
-// code
 #include "main.h"
-#include "myLib.h"
 
-#include "mapHandler.h"
+// library
+#include "Library/myLib.h"
+#include "Library/mapHandler.h"
 
-// backgrounds
-
-#include "littleroot.h"
+// maps
+#include "Maps/littleroot.h"
+#include "Maps/dewford.h"
 
 
 // variables
@@ -66,7 +66,7 @@ void init() {
 
 	initMap(0, 4);
 
-	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2); // fix
+	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2); 
 
 
 }
