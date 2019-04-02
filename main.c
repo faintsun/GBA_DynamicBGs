@@ -7,6 +7,7 @@
 // backgrounds
 
 #include "Maps/littleroot.h"
+#include "Maps/dewford.h"
 
 
 // variables
@@ -60,8 +61,12 @@ void init() {
 	REG_DISPCTL = MODE0 | BG2_ENABLE;
 	REG_BG2CNT = CBB(0) | SBB(31) | BG_SIZE0 | COLOR256;
 
-	loadPalette(littlerootPal);
-	loadMap(littlerootTiles, littlerootTilesLen, littlerootMap, littlerootMapLen, 68, 50);
+	// loadPalette(littlerootPal);
+	// loadMap(littlerootTiles, littlerootTilesLen, littlerootMap, littlerootMapLen, 68, 50);
+
+	loadPalette(dewfordPal);
+	loadMap(dewfordTiles, dewfordTilesLen, dewfordMap, dewfordMapLen, 50, 48);
+
 
 	DMANow(3, WORLD_TILES, &CHARBLOCKBASE[0], WORLD_TILE_LENGTH/2);
 
@@ -97,7 +102,7 @@ void buttonHandler() {
 			}
 		}
 		if(BUTTON_HELD(BUTTON_DOWN)) {
-			if (TILE_ROW < WORLD_MAP_TILE_HEIGHT - SCREEN_TILE_HEIGHT) {
+			if (TILE_ROW < WORLD_MAP_TILE_HEIGHT - SCREEN_TILE_HEIGHT - 2) {
 				nextMove = moveMapDown;
 				moving = 1;
 				//nextMove();

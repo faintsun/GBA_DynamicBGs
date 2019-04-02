@@ -18,7 +18,7 @@ char moving;
 // Use this when entering a new area to load the area's tiles & map
 void loadMap(const unsigned short* tiles, const unsigned short tlen, 	// tiles of new area
 				const unsigned short* map, const unsigned short mlen,   // map of new area
-				unsigned short tilew, unsigned short tileh) {			// witdh and height of area in 8x8 tiles
+				unsigned short tilew, unsigned short tileh) {			// width and height of area in 8x8 tiles
 
 	WORLD_TILE_LENGTH = tlen;
 	WORLD_MAP_LENGTH = mlen;
@@ -97,8 +97,10 @@ void moveMapRight() {
 void moveMapUp() {
 
 	for (int x = 0; x <= 1; x++) {
-		ROW_CURSOR -= 1;
+		
 		TILE_ROW -= 1;
+		ROW_CURSOR -= 1;
+		
 
 		int temp_row_cursor = ROW_CURSOR;
 
@@ -106,9 +108,13 @@ void moveMapUp() {
 			temp_row_cursor = 32 + ROW_CURSOR;
 		}
 
-		for (int i = 0; i < 32; i++) {
-			SCREEN_MAP[OFFSET(temp_row_cursor, i, 32)] = WORLD_MAP[OFFSET(TILE_ROW, i, WORLD_MAP_TILE_WIDTH)];
-		}
+
+			
+			for (int i = 0; i < 32; i++) {
+				SCREEN_MAP[OFFSET(temp_row_cursor, i, 32)] = WORLD_MAP[OFFSET(TILE_ROW, i, WORLD_MAP_TILE_WIDTH)];
+			}
+		
+		
 	}
 
 	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[31], WORLD_MAP_LENGTH/2);
@@ -117,20 +123,30 @@ void moveMapUp() {
 
 void moveMapDown() {
 
+	// > 15 stop drawing
+
 	for (int x = 1; x >= 0; x--) {
-		ROW_CURSOR += 1;
+
 		TILE_ROW += 1;
+		ROW_CURSOR += 1;
 
+		int temp_row_cursor = ROW_CURSOR;
 
-		int temp_row_offset = ROW_CURSOR;
-
-		if (ROW_CURSOR + SCREEN_TILE_HEIGHT > 32) {
-			temp_row_offset = ROW_CURSOR - 32;
+		if (ROW_CURSOR < 0) {
+			temp_row_cursor = ROW_CURSOR + 32;
+		}
+		if (ROW_CURSOR > 32) {
+			temp_row_cursor = ROW_CURSOR - 32;
 		}
 
-		for (int i = 0; i < 32; i++) {
-			//SCREEN_MAP[OFFSET(SCREEN_TILE_HEIGHT + temp_row_offset - 1, i, 32)] = WORLD_MAP[OFFSET(SCREEN_TILE_HEIGHT + TILE_ROW - 1, i + TILE_COL, WORLD_MAP_TILE_WIDTH)];
-			SCREEN_MAP[OFFSET(ROW_CURSOR - 1, i, 32)] = WORLD_MAP[OFFSET(32 + TILE_ROW, i, WORLD_MAP_TILE_WIDTH)];
+		if (TILE_ROW < WORLD_MAP_TILE_HEIGHT - 32 + 1) {
+
+			
+
+			for (int i = 0; i < 32; i++) {
+				//SCREEN_MAP[OFFSET(SCREEN_TILE_HEIGHT + temp_row_offset - 1, i, 32)] = WORLD_MAP[OFFSET(SCREEN_TILE_HEIGHT + TILE_ROW - 1, i + TILE_COL, WORLD_MAP_TILE_WIDTH)];
+				SCREEN_MAP[OFFSET(temp_row_cursor - 1, i, 32)] = WORLD_MAP[OFFSET(32 + TILE_ROW - 1, i, WORLD_MAP_TILE_WIDTH)];
+			}
 		}
 
 	}
