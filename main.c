@@ -1,7 +1,6 @@
 // code
 #include "main.h"
 #include "Library/myLib.h"
-
 #include "Library/mapHandler.h"
 
 // backgrounds
@@ -41,7 +40,7 @@ int main() {
 
 	while(1) {
 
-		buttonHandler();
+		buttonHandler(&area);
 		cameraHandler();
 
 		updateScreenLocations();
@@ -65,51 +64,47 @@ void init() {
 	// loadMap(littlerootTiles, littlerootTilesLen, littlerootMap, littlerootMapLen, 68, 50);
 
 	loadPalette(dewfordPal);
-	loadMap(dewfordTiles, dewfordTilesLen, dewfordMap, dewfordMapLen, 50, 48);
-
-
-	DMANow(3, WORLD_TILES, &CHARBLOCKBASE[0], WORLD_TILE_LENGTH/2);
-
+	loadMap(dewfordTiles, dewfordTilesLen, dewfordMap, dewfordMapLen, 50, 48, 0, 31);
 	initMap(0, 0);
 
 	dirTimer = 16;
 
-	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[31], WORLD_MAP_LENGTH/2); // fix
+	drawMap();
 
 
 }
 
 
 
-void buttonHandler() {
+void buttonHandler(AREAMAP* area) {
 	oldButtons = buttons;
 	buttons = BUTTONS;
 
 	if (!moving) {
 		if(BUTTON_HELD(BUTTON_RIGHT)) {
-			if (TILE_COL < WORLD_MAP_TILE_WIDTH - SCREEN_TILE_WIDTH) {
+			if (area->TILE_COL < area->WORLD_MAP_TILE_WIDTH - SCREEN_TILE_WIDTH) {
 				nextMove = moveMapRight;
 				moving = 1;
-				//nextMove();
+				nextMove();
 			}
 		}
 
 		if(BUTTON_HELD(BUTTON_LEFT)) {
-			if (TILE_COL > 0) {
+			if (area->TILE_COL > 0) {
 				nextMove = moveMapLeft;
 				moving = 1;
 				nextMove();
 			}
 		}
 		if(BUTTON_HELD(BUTTON_DOWN)) {
-			if (TILE_ROW < WORLD_MAP_TILE_HEIGHT - SCREEN_TILE_HEIGHT - 2) {
+			if (area->TILE_ROW < area->WORLD_MAP_TILE_HEIGHT - SCREEN_TILE_HEIGHT - 2) {
 				nextMove = moveMapDown;
 				moving = 1;
 				//nextMove();
 			}
 		}
 		if(BUTTON_HELD(BUTTON_UP)) {
-			if (TILE_ROW > 0) {
+			if (area->TILE_ROW > 0) {
 				nextMove = moveMapUp;
 				moving = 1;
 				nextMove();
@@ -138,7 +133,7 @@ void cameraHandler() {
 		if (dirTimer < 1) {
 
 			dirTimer = 16;
-			if (nextMove == moveMapRight || nextMove == moveMapDown) {
+			if ( nextMove == moveMapDown) {
 				nextMove();
 			}
 			moving = 0;
