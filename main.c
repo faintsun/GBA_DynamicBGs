@@ -89,21 +89,21 @@ void buttonHandler(AREAMAP* area) {
 			}
 		}
 
-		if(BUTTON_HELD(BUTTON_LEFT)) {
+		else if(BUTTON_HELD(BUTTON_LEFT)) {
 			if (area->TILE_COL > 0) {
 				nextMove = moveMapLeft;
 				moving = 1;
 				nextMove();
 			}
 		}
-		if(BUTTON_HELD(BUTTON_DOWN)) {
+		else if(BUTTON_HELD(BUTTON_DOWN)) {
 			if (area->TILE_ROW < area->WORLD_MAP_TILE_HEIGHT - SCREEN_TILE_HEIGHT - 2) {
 				nextMove = moveMapDown;
 				moving = 1;
-				//nextMove();
+				nextMove();
 			}
 		}
-		if(BUTTON_HELD(BUTTON_UP)) {
+		else if(BUTTON_HELD(BUTTON_UP)) {
 			if (area->TILE_ROW > 0) {
 				nextMove = moveMapUp;
 				moving = 1;
@@ -133,9 +133,9 @@ void cameraHandler() {
 		if (dirTimer < 1) {
 
 			dirTimer = 16;
-			if ( nextMove == moveMapDown) {
-				nextMove();
-			}
+			// if ( nextMove == moveMapDown) {
+			// 	nextMove();
+			// }
 			moving = 0;
 		}
 	}

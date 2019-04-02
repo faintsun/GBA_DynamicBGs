@@ -61,21 +61,24 @@ void moveMapLeft() {
 		area.COL_CURSOR -= 1;
 		area.TILE_COL -= 1;
 		int temp_col_cursor = area.COL_CURSOR;
+
 		if (area.COL_CURSOR < 0) temp_col_cursor = area.COL_CURSOR + 32;
 		if (area.COL_CURSOR >= 32) temp_col_cursor = area.COL_CURSOR - 32;
 
-
-		// for (int i = 0; i < 32; i++) {
-		// 	worldToScreen(i, temp_col_cursor, area.TILE_ROW - area.ROW_CURSOR + i, area.TILE_COL);
-		// }
-
 		for (int i = 0; i < area.ROW_CURSOR; i++) {
-			worldToScreen(i, temp_col_cursor, 32-i, area.TILE_COL);
+			//worldToScreen(i, temp_col_cursor, SCREEN_TILE_WIDTH-i, area.TILE_COL);
+
+			worldToScreen(i, temp_col_cursor, 
+				i + area.TILE_ROW + (32 - area.ROW_CURSOR), area.TILE_COL);
 		}
+
 		for (int i = area.ROW_CURSOR; i < 32; i++) {
-			worldToScreen(i, temp_col_cursor, area.TILE_ROW - area.ROW_CURSOR + i, area.TILE_COL);
+			worldToScreen(i, temp_col_cursor, 
+				area.TILE_ROW - area.ROW_CURSOR + i, area.TILE_COL);
+
 		}
 	}
+
 
 	drawMap();
 }
@@ -87,13 +90,13 @@ void moveMapRight() {
 
 		area.COL_CURSOR += 1;
 		area.TILE_COL += 1;
-		int temp_col_cursor = area.COL_CURSOR;
-		temp_col_cursor = area.COL_CURSOR + SCREEN_TILE_WIDTH - 1;
+		int temp_col_cursor = area.COL_CURSOR + SCREEN_TILE_WIDTH - 1;
 
 		if (temp_col_cursor >= 32) temp_col_cursor -= 32;
+		if (temp_col_cursor < 0) temp_col_cursor += 32;
 
 		for (int i = 0; i < area.ROW_CURSOR; i++) {
-			worldToScreen(i, temp_col_cursor, 32+i, area.TILE_COL + SCREEN_TILE_WIDTH - 1);
+			worldToScreen(i, temp_col_cursor, 32 + i, area.TILE_COL + SCREEN_TILE_WIDTH - 1);
 		}
 		for (int i = area.ROW_CURSOR; i < 32; i++) {
 			worldToScreen(i, temp_col_cursor, area.TILE_ROW - area.ROW_CURSOR + i, area.TILE_COL + SCREEN_TILE_WIDTH - 1);
@@ -133,17 +136,21 @@ void moveMapDown() {
 
 		area.TILE_ROW += 1;
 		area.ROW_CURSOR += 1;
-		int temp_row_cursor = area.ROW_CURSOR;
+		int temp_row_cursor = area.ROW_CURSOR + SCREEN_TILE_HEIGHT;
 
-		if (area.ROW_CURSOR < 0) temp_row_cursor = 0;
-		if (area.ROW_CURSOR > 32) temp_row_cursor = area.ROW_CURSOR - 32;
-		
+		if (temp_row_cursor < 0) temp_row_cursor += 32;
+		if (temp_row_cursor > 32) temp_row_cursor -= 32;
+
 		for (int i = 0; i < area.COL_CURSOR + 1; i++) {
-			worldToScreen(temp_row_cursor - 1, i, 32 + area.TILE_ROW - 1, 32 + i);
+			worldToScreen(temp_row_cursor - 1, i, 
+				SCREEN_TILE_HEIGHT + area.TILE_ROW-1, 32 + i);
 		}		
 		for (int i = area.COL_CURSOR; i < 32; i++) {
-			worldToScreen(temp_row_cursor - 1, i, 32 + area.TILE_ROW - 1, area.TILE_COL - area.COL_CURSOR + i);			}
+			worldToScreen(temp_row_cursor - 1, i, 
+				SCREEN_TILE_HEIGHT + area.TILE_ROW-1, area.TILE_COL - area.COL_CURSOR + i);			
 		}
+		
+	}
 	
 
 	drawMap();
