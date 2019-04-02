@@ -18,7 +18,8 @@ int vOff = 0;
 
 
 int dir = 0;
-int dirTimer = 16;
+int moving = 0;
+int dirTimer;
 
 
 
@@ -57,16 +58,18 @@ int main() {
 void init() {
 
 	REG_DISPCTL = MODE0 | BG2_ENABLE;
-	REG_BG2CNT = CBB(0) | SBB(26) | BG_SIZE0 | COLOR256;
+	REG_BG2CNT = CBB(0) | SBB(31) | BG_SIZE0 | COLOR256;
 
 	loadPalette(littlerootPal);
-	loadMap(littlerootTiles, littlerootTilesLen, littlerootMap, littlerootMapLen, 48, 44);
+	loadMap(littlerootTiles, littlerootTilesLen, littlerootMap, littlerootMapLen, 68, 50);
 
 	DMANow(3, WORLD_TILES, &CHARBLOCKBASE[0], WORLD_TILE_LENGTH/2);
 
-	initMap(2, 0);
+	initMap(0, 0);
 
-	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[26], WORLD_MAP_LENGTH/2); // fix
+	dirTimer = 16;
+
+	DMANow(3, SCREEN_MAP, &SCREENBLOCKBASE[31], WORLD_MAP_LENGTH/2); // fix
 
 
 }
@@ -77,28 +80,33 @@ void buttonHandler() {
 	oldButtons = buttons;
 	buttons = BUTTONS;
 
-	if (!nextMove) {
+	if (!moving) {
 		if(BUTTON_HELD(BUTTON_RIGHT)) {
 			if (TILE_COL < WORLD_MAP_TILE_WIDTH - SCREEN_TILE_WIDTH) {
 				nextMove = moveMapRight;
+				moving = 1;
+				//nextMove();
 			}
 		}
 
 		if(BUTTON_HELD(BUTTON_LEFT)) {
 			if (TILE_COL > 0) {
 				nextMove = moveMapLeft;
+				moving = 1;
 				nextMove();
 			}
 		}
 		if(BUTTON_HELD(BUTTON_DOWN)) {
 			if (TILE_ROW < WORLD_MAP_TILE_HEIGHT - SCREEN_TILE_HEIGHT) {
 				nextMove = moveMapDown;
-				nextMove();
+				moving = 1;
+				//nextMove();
 			}
 		}
 		if(BUTTON_HELD(BUTTON_UP)) {
 			if (TILE_ROW > 0) {
 				nextMove = moveMapUp;
+				moving = 1;
 				nextMove();
 			}
 
@@ -110,7 +118,7 @@ void buttonHandler() {
 void cameraHandler() {
 
 
-	if (nextMove) {
+	if (moving) {
 		dirTimer--;
 		if (nextMove == moveMapLeft) {
 			hOff--;
@@ -121,13 +129,14 @@ void cameraHandler() {
 		} else if (nextMove == moveMapUp) {
 			vOff--;
 		}
+
 		if (dirTimer < 1) {
 
 			dirTimer = 16;
-			if (nextMove == moveMapRight) {
+			if (nextMove == moveMapRight || nextMove == moveMapDown) {
 				nextMove();
 			}
-			nextMove = 0;
+			moving = 0;
 		}
 	}
 }
