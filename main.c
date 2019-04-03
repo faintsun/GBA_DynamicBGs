@@ -68,12 +68,12 @@ void init() {
 	REG_DISPCTL = MODE0 | BG2_ENABLE | SPRITE_ENABLE;
 	REG_BG2CNT = CBB(0) | SBB(31) | BG_SIZE0 | COLOR256;
 
-	// loadPalette(littlerootPal);
-	// loadMap(littlerootTiles, littlerootTilesLen, littlerootMap, littlerootMapLen, 68, 50, 0, 31);
+	loadPalette(littlerootPal);
+	loadMap(littlerootTiles, littlerootTilesLen, littlerootMap, littlerootMapLen, 68, 50, 0, 31);
 
-	loadPalette(dewfordPal);
-	loadMap(dewfordTiles, dewfordTilesLen, dewfordMap, dewfordMapLen, 50, 48, 0, 31);
-	initMap(4, 0);
+	// loadPalette(dewfordPal);
+	// loadMap(dewfordTiles, dewfordTilesLen, dewfordMap, dewfordMapLen, 50, 48, 0, 31);
+	initMap(0, 0);
 
 	DMANow(3, spriteSheetPal, SPRITE_PALETTE, 256);
 	DMANow(3, spriteSheetTiles, &CHARBLOCKBASE[4], spriteSheetTilesLen/2);
