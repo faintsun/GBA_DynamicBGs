@@ -1,7 +1,13 @@
 #include "mapHandler.h"
 #include "myLib.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
+
 AREAMAP area;
+int cursorC;
+int cursorR;
 
 char moving;
 
@@ -22,8 +28,7 @@ void loadMap(const unsigned short* tiles, const unsigned short tlen, 	// tiles o
 	DMANow(3, map, area.WORLD_MAP, mlen/2);
 
 	DMANow(3, area.WORLD_TILES, &CHARBLOCKBASE[area.CBB_LOC], area.WORLD_TILE_LENGTH/2);
-	DMANow(3, area.SCREEN_MAP, &SCREENBLOCKBASE[area.SBB_LOC], area.WORLD_MAP_LENGTH/2); 
-
+	
 	moving = 0;
 	// Now we can use the generic WORLD_TILES and WORLD_MAP to draw everything
 
@@ -31,7 +36,7 @@ void loadMap(const unsigned short* tiles, const unsigned short tlen, 	// tiles o
 
 void drawMap() {
 
-	DMANow(3, area.SCREEN_MAP, &SCREENBLOCKBASE[area.SBB_LOC], area.WORLD_MAP_LENGTH/2);
+	DMANow(3, area.SCREEN_MAP, &SCREENBLOCKBASE[area.SBB_LOC], 1024);
 
 }
 
@@ -46,6 +51,8 @@ void initMap(int r, int c) {
 	area.TILE_COL = c;
 	area.ROW_CURSOR = 0;
 	area.COL_CURSOR = 0;
+
+	drawMap();
 }
 
 void worldToScreen(int screenR, int screenC, int worldR, int worldC) {
@@ -53,29 +60,29 @@ void worldToScreen(int screenR, int screenC, int worldR, int worldC) {
 		area.WORLD_MAP[ OFFSET(worldR, worldC, area.WORLD_MAP_TILE_WIDTH) ];
 }
 
+void cursorReset() {
+	if (cursorC < 0) cursorC += 32;
+	if (cursorC > 32) cursorC -= 32;
+	if (cursorR < 0) cursorR += 32;
+	if (cursorR > 32) cursorR -= 32;
+}
 
-// draw 2 cols worth of tiles to appear on the left
 void moveMapLeft() {
-
 	for (int x = 0; x <= 1; x++) {
 		area.COL_CURSOR -= 1;
 		area.TILE_COL -= 1;
-		int temp_col_cursor = area.COL_CURSOR;
+		cursorC = area.COL_CURSOR;
 
-		if (area.COL_CURSOR < 0) temp_col_cursor = area.COL_CURSOR + 32;
-		if (area.COL_CURSOR >= 32) temp_col_cursor = area.COL_CURSOR - 32;
+		cursorReset();
 
 		for (int i = 0; i < area.ROW_CURSOR; i++) {
-			//worldToScreen(i, temp_col_cursor, SCREEN_TILE_WIDTH-i, area.TILE_COL);
-
-			worldToScreen(i, temp_col_cursor, 
+			worldToScreen(i, cursorC, 
 				i + area.TILE_ROW + (32 - area.ROW_CURSOR), area.TILE_COL);
 		}
 
 		for (int i = area.ROW_CURSOR; i < 32; i++) {
-			worldToScreen(i, temp_col_cursor, 
+			worldToScreen(i, cursorC, 
 				area.TILE_ROW - area.ROW_CURSOR + i, area.TILE_COL);
-
 		}
 	}
 
@@ -83,23 +90,35 @@ void moveMapLeft() {
 	drawMap();
 }
 
-// draws 2 cols worth of tiles to appear on the right
 void moveMapRight() {
-
 	for (int x = 1; x >=0 ; x--) {
 
 		area.COL_CURSOR += 1;
 		area.TILE_COL += 1;
-		int temp_col_cursor = area.COL_CURSOR + SCREEN_TILE_WIDTH - 1;
+		cursorC = area.COL_CURSOR;
 
-		if (temp_col_cursor >= 32) temp_col_cursor -= 32;
-		if (temp_col_cursor < 0) temp_col_cursor += 32;
+		cursorReset();
 
-		for (int i = 0; i < area.ROW_CURSOR; i++) {
-			worldToScreen(i, temp_col_cursor, 32 + i, area.TILE_COL + SCREEN_TILE_WIDTH - 1);
-		}
-		for (int i = area.ROW_CURSOR; i < 32; i++) {
-			worldToScreen(i, temp_col_cursor, area.TILE_ROW - area.ROW_CURSOR + i, area.TILE_COL + SCREEN_TILE_WIDTH - 1);
+		int tempCursor = cursorC + SCREEN_TILE_WIDTH;
+		if (tempCursor > 32) tempCursor -= 32;
+
+		if (area.ROW_CURSOR > 0) {
+			for (int i = 0; i < area.ROW_CURSOR; i++) {
+				if (i < area.ROW_CURSOR) worldToScreen(i, tempCursor - 1, 
+						32 + i, area.TILE_COL + SCREEN_TILE_WIDTH - 1);
+				else worldToScreen(i, tempCursor - 1, 
+						area.TILE_ROW - area.ROW_CURSOR + i, area.TILE_COL + SCREEN_TILE_WIDTH - 1);
+			}
+		} else {
+			for (int i = 0; i < 32 + area.ROW_CURSOR; i++) {
+				worldToScreen(i, tempCursor - 1, 
+					area.TILE_ROW - area.ROW_CURSOR + i, area.TILE_COL + SCREEN_TILE_WIDTH - 1);
+
+			}
+			for (int i = 32 + area.ROW_CURSOR; i < 32; i++) {
+				worldToScreen(i, tempCursor - 1, 
+					area.TILE_ROW + (i - 32 - area.ROW_CURSOR), area.TILE_COL + SCREEN_TILE_WIDTH - 1);
+			}
 		}
 		
 	}
@@ -108,21 +127,20 @@ void moveMapRight() {
 }
 
 void moveMapUp() {
-
 	for (int x = 0; x <= 1; x++) {
 		
 		area.TILE_ROW -= 1;
 		area.ROW_CURSOR -= 1;
-		int temp_row_cursor = area.ROW_CURSOR;
+		cursorR = area.ROW_CURSOR;
 
-		if (area.ROW_CURSOR < 0) temp_row_cursor = 32 + area.ROW_CURSOR;
+		cursorReset();
 
 		for (int i = 0; i < area.COL_CURSOR + 1; i++) {
-			worldToScreen(temp_row_cursor, i, area.TILE_ROW, 32 + i);
+			worldToScreen(cursorR, i, area.TILE_ROW, 32 + i);
 		}
 
 		for (int i = area.COL_CURSOR; i < 32; i++) {
-			worldToScreen(temp_row_cursor, i, area.TILE_ROW, area.TILE_COL - area.COL_CURSOR + i);
+			worldToScreen(cursorR, i, area.TILE_ROW, area.TILE_COL - area.COL_CURSOR + i);
 		}
 	}
 
@@ -130,28 +148,24 @@ void moveMapUp() {
 }
 
 void moveMapDown() {
-
-
 	for (int x = 1; x >= 0; x--) {
 
 		area.TILE_ROW += 1;
 		area.ROW_CURSOR += 1;
-		int temp_row_cursor = area.ROW_CURSOR + SCREEN_TILE_HEIGHT;
+		cursorR = area.ROW_CURSOR + SCREEN_TILE_HEIGHT;
 
-		if (temp_row_cursor < 0) temp_row_cursor += 32;
-		if (temp_row_cursor > 32) temp_row_cursor -= 32;
+		cursorReset();
 
-		for (int i = 0; i < area.COL_CURSOR + 1; i++) {
-			worldToScreen(temp_row_cursor - 1, i, 
+		for (int i = 0; i < area.COL_CURSOR + 2; i++) {
+			worldToScreen(cursorR - 1, i, 
 				SCREEN_TILE_HEIGHT + area.TILE_ROW-1, 32 + i);
+
 		}		
 		for (int i = area.COL_CURSOR; i < 32; i++) {
-			worldToScreen(temp_row_cursor - 1, i, 
-				SCREEN_TILE_HEIGHT + area.TILE_ROW-1, area.TILE_COL - area.COL_CURSOR + i);			
+			worldToScreen(cursorR - 1, i, 
+				SCREEN_TILE_HEIGHT + area.TILE_ROW-1, (area.TILE_COL - area.COL_CURSOR) + i );			
 		}
-		
 	}
-	
 
 	drawMap();
 }

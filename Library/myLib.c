@@ -1,5 +1,7 @@
 #include "myLib.h"
 
+#include <math.h>
+
 unsigned short *videoBuffer = (u16 *)0x6000000;
 
 unsigned short *frontBuffer = (u16 *)0x6000000;
@@ -55,4 +57,9 @@ void setPixel(int row, int col, unsigned short color) {
 void drawBackgroundImage3(const unsigned short * image)
 {
     DMANow(3, (unsigned short*)image, videoBuffer, (240*160));
+}
+
+int getDigit(int num, int digit) {
+    num /= pow( 10, digit );
+    return num % 10;
 }

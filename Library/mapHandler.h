@@ -35,6 +35,7 @@ void loadMap(const unsigned short*, const unsigned short, const unsigned short*,
 			unsigned short, unsigned short, unsigned char, unsigned char);
 void drawMap();
 void worldToScreen(int, int, int, int);
+void cursorReset();
 void moveMapLeft();
 void moveMapRight();
 void moveMapUp();

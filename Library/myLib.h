@@ -59,8 +59,9 @@ void flipPage();
 void fillScreen(unsigned short color);
 void setPixel(int, int, unsigned short);
 
-
 void drawBackgroundImage3(const unsigned short * image);
+
+int getDigit(int, int);
 
 
 
