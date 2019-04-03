@@ -76,7 +76,7 @@ void moveMapLeft() {
 		cursorReset();
 
 		for (int i = 0; i < 32; i++ ) {
-			if (i < area.ROW_CURSOR) worldToScreen(i, cursorC, i + area.TILE_ROW + (32 - area.ROW_CURSOR), area.TILE_COL);
+			if (i < cursorR) worldToScreen(i, cursorC, 32 + area.TILE_ROW - area.ROW_CURSOR + i, area.TILE_COL);
 			else worldToScreen(i, cursorC, area.TILE_ROW - area.ROW_CURSOR + i, area.TILE_COL);
 		}
 	}
@@ -96,14 +96,11 @@ void moveMapRight() {
 
 		int tempCursor = cursorC + SCREEN_TILE_WIDTH;
 		if (tempCursor > 32) tempCursor -= 32;
-
 	
 		for (int i = 0; i < 32; i++) {
 			if (i < cursorR) worldToScreen(i, tempCursor - 1,  32 + area.TILE_ROW - area.ROW_CURSOR + i, area.TILE_COL + SCREEN_TILE_WIDTH - 1);
 			else worldToScreen(i, tempCursor - 1, area.TILE_ROW - area.ROW_CURSOR + i, area.TILE_COL + SCREEN_TILE_WIDTH - 1);
 		}
-		
-		
 	}
 
 	drawMap();	
