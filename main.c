@@ -147,35 +147,38 @@ void buttonHandler(AREAMAP* area) {
 	buttons = BUTTONS;
 
 	if (!moving) {
+		int inputCheck = 0;
 		if(BUTTON_HELD(BUTTON_RIGHT)) {
 			if (area->TILE_COL < area->WORLD_MAP_TILE_WIDTH - SCREEN_TILE_WIDTH) {
 				nextMove = moveMapRight;
-				moving = 1;
-				nextMove();
+				inputCheck = 1;
+
 			}
 		}
 
 		else if(BUTTON_HELD(BUTTON_LEFT)) {
 			if (area->TILE_COL > 0) {
 				nextMove = moveMapLeft;
-				moving = 1;
-				nextMove();
+				inputCheck = 1;
 			}
 		}
 		else if(BUTTON_HELD(BUTTON_DOWN)) {
 			if (area->TILE_ROW < area->WORLD_MAP_TILE_HEIGHT - SCREEN_TILE_HEIGHT - 2) {
 				nextMove = moveMapDown;
-				moving = 1;
-				nextMove();
+				inputCheck = 1;
 			}
 		}
 		else if(BUTTON_HELD(BUTTON_UP)) {
 			if (area->TILE_ROW > 0) {
 				nextMove = moveMapUp;
-				moving = 1;
-				nextMove();
+				inputCheck = 1;
 			}
 
+		}
+
+		if (inputCheck) {
+			moving = 1;
+			nextMove();
 		}
 	}
 
@@ -199,9 +202,6 @@ void cameraHandler() {
 		if (dirTimer < 1) {
 
 			dirTimer = 16;
-			// if ( nextMove == moveMapDown) {
-			// 	nextMove();
-			// }
 			moving = 0;
 		}
 	}
