@@ -107,16 +107,16 @@ void draw(AREAMAP* area) {
 	for (int i = 0; i < 2; i++) {
 		shadowOAM[ROWNUMS + i].attr0 = 16;
 		shadowOAM[ROWNUMS + i].attr1 = ATTR1_SIZE8 | (204 - (i*8));
-		shadowOAM[ROWNUMS + i].attr2 = SPRITEOFFSET16(0, getDigit(area->TILE_ROW, i));	
+		shadowOAM[ROWNUMS + i].attr2 = SPRITEOFFSET16(0, getDigit(area->tileR, i));	
 	}
 
 	int rNeg = 0;
-	if (area->ROW_CURSOR < 0) rNeg = 4;
+	if (area->offsetR < 0) rNeg = 4;
 
 	for (int i = 0; i < 2; i++) {
 		shadowOAM[ROWCURS + i].attr0 = 16;
 		shadowOAM[ROWCURS + i].attr1 = ATTR1_SIZE8 | (224 - (i*8));
-		shadowOAM[ROWCURS + i].attr2 = SPRITEOFFSET16(rNeg, getDigit(abs(area->ROW_CURSOR), i));	
+		shadowOAM[ROWCURS + i].attr2 = SPRITEOFFSET16(rNeg, getDigit(abs(area->offsetR), i));	
 	}
 
 
@@ -124,17 +124,17 @@ void draw(AREAMAP* area) {
 	for (int i = 0; i < 2; i++) {
 		shadowOAM[COLNUMS + i].attr0 = 24;
 		shadowOAM[COLNUMS + i].attr1 = ATTR1_SIZE8 | (204 - (i*8));
-		shadowOAM[COLNUMS + i].attr2 = SPRITEOFFSET16(0, getDigit(area->TILE_COL, i));	
+		shadowOAM[COLNUMS + i].attr2 = SPRITEOFFSET16(0, getDigit(area->tileC, i));	
 	}
 
 
 	int cNeg = 0;
-	if (area->COL_CURSOR < 0) cNeg = 4;
+	if (area->offsetC < 0) cNeg = 4;
 
 	for (int i = 0; i < 2; i++) {
 		shadowOAM[COLCURS + i].attr0 = 24;
 		shadowOAM[COLCURS + i].attr1 = ATTR1_SIZE8 | (224 - (i*8));
-		shadowOAM[COLCURS + i].attr2 = SPRITEOFFSET16(cNeg, getDigit(abs(area->COL_CURSOR), i));	
+		shadowOAM[COLCURS + i].attr2 = SPRITEOFFSET16(cNeg, getDigit(abs(area->offsetC), i));	
 	}
 
 	DMANow(3, shadowOAM, OAM, 128 * 4);
@@ -149,7 +149,7 @@ void buttonHandler(AREAMAP* area) {
 	if (!moving) {
 		int inputCheck = 0;
 		if(BUTTON_HELD(BUTTON_RIGHT)) {
-			if (area->TILE_COL < area->WORLD_MAP_TILE_WIDTH - SCREEN_TILE_WIDTH) {
+			if (area->tileC < area->worldTileW - SCREEN_TILE_WIDTH) {
 				nextMove = moveMapRight;
 				inputCheck = 1;
 
@@ -157,19 +157,19 @@ void buttonHandler(AREAMAP* area) {
 		}
 
 		else if(BUTTON_HELD(BUTTON_LEFT)) {
-			if (area->TILE_COL > 0) {
+			if (area->tileC > 0) {
 				nextMove = moveMapLeft;
 				inputCheck = 1;
 			}
 		}
 		else if(BUTTON_HELD(BUTTON_DOWN)) {
-			if (area->TILE_ROW < area->WORLD_MAP_TILE_HEIGHT - SCREEN_TILE_HEIGHT - 2) {
+			if (area->tileR < area->worldTileH - SCREEN_TILE_HEIGHT - 2) {
 				nextMove = moveMapDown;
 				inputCheck = 1;
 			}
 		}
 		else if(BUTTON_HELD(BUTTON_UP)) {
-			if (area->TILE_ROW > 0) {
+			if (area->tileR > 0) {
 				nextMove = moveMapUp;
 				inputCheck = 1;
 			}
