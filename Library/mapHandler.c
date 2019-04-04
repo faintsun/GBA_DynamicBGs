@@ -11,6 +11,8 @@ char moving;
 int rowInc;
 int colInc;
 
+int test = 0;
+
 // Use this when entering a new area to load the area's tiles & map
 void loadMap(const unsigned short* tiles, const unsigned short tlen, 	// tiles of new area
 				const unsigned short* map, const unsigned short mlen,   // map of new area
@@ -70,6 +72,8 @@ void cursorReset() {
 
 	if (rowInc + SCREEN_TILE_HEIGHT > 32) { rowInc = -16; area.mapD += 32; }
 	if (colInc + SCREEN_TILE_WIDTH > 32) { colInc = -16; area.mapH += 32; }
+
+	if (area.offsetR < 0) { test = -32; }
 }
 
 void moveMapLeft() {
@@ -83,7 +87,7 @@ void moveMapLeft() {
 
 		for (int i = 0; i < 32; i++ ) {
 			if (i < area.cursorR) worldToScreen(i, area.cursorC, area.tileR - area.offsetR + area.mapD + i, area.tileC);
-			else worldToScreen(i, area.cursorC, area.tileR - area.offsetR + i +, area.tileC);
+			else worldToScreen(i, area.cursorC, test + area.tileR - area.offsetR + i, area.tileC);
 		}
 	}
 	drawMap();
@@ -100,7 +104,7 @@ void moveMapRight() {
 
 		for (int i = 0; i < 32; i++) {
 			if (i < area.cursorR) worldToScreen(i, area.cursorC-1,  area.tileR - area.offsetR + area.mapD + i, area.tileC + SCREEN_TILE_WIDTH - 1);
-		 	else worldToScreen(i, area.cursorC - 1, area.tileR - area.offsetR + i, area.tileC + SCREEN_TILE_WIDTH - 1);
+		 	else worldToScreen(i, area.cursorC - 1, test + area.tileR - area.offsetR + i, area.tileC + SCREEN_TILE_WIDTH - 1);
 
 		}
 	}
