@@ -27,6 +27,10 @@ typedef struct {
 	int offsetC;
 	int cursorR;
 	int cursorC;
+	int mapU;
+	int mapD;
+	int mapR;
+	int mapL;
 
 } AREAMAP;
 
