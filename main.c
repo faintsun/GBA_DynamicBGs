@@ -73,7 +73,7 @@ void init() {
 
 	loadPalette(dewfordPal);
 	loadMap(dewfordTiles, dewfordTilesLen, dewfordMap, dewfordMapLen, 50, 48, 0, 31);
-	initMap(0, 0);
+	initMap(0,0);
 
 	DMANow(3, spriteSheetPal, SPRITE_PALETTE, 256);
 	DMANow(3, spriteSheetTiles, &CHARBLOCKBASE[4], spriteSheetTilesLen/2);
