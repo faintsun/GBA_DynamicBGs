@@ -25,6 +25,8 @@ typedef struct {
 	int tileC;	
 	int offsetR;
 	int offsetC;
+	int cursorR;
+	int cursorC;
 
 } AREAMAP;
 

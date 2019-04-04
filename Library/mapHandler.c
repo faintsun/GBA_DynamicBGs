@@ -6,8 +6,6 @@
 
 
 AREAMAP area;
-int cursorC;
-int cursorR;
 
 char moving;
 
@@ -29,9 +27,6 @@ void loadMap(const unsigned short* tiles, const unsigned short tlen, 	// tiles o
 
 	DMANow(3, area.WORLD_TILES, &CHARBLOCKBASE[area.CBB_LOC], area.worldTileLen/2);
 	
-	moving = 0;
-	// Now we can use the generic WORLD_TILES and WORLD_MAP to draw everything
-
 }
 
 void drawMap() {
@@ -51,6 +46,8 @@ void initMap(int r, int c) {
 	area.tileC = c;
 	area.offsetR = 0;
 	area.offsetC = 0;
+	area.cursorR = 0;
+	area.cursorC = 0;
 
 	drawMap();
 }
@@ -61,23 +58,23 @@ void worldToScreen(int screenR, int screenC, int worldR, int worldC) {
 }
 
 void cursorReset() {
-	if (cursorC < 0) cursorC += 32;
-	if (cursorC > 32) cursorC -= 32;
-	if (cursorR < 0) cursorR += 32;
-	if (cursorR > 32) cursorR -= 32;
+	if (area.cursorC < 0) area.cursorC += 32;
+	if (area.cursorC > 32) area.cursorC -= 32;
+	if (area.cursorR < 0) area.cursorR += 32;
+	if (area.cursorR > 32) area.cursorR -= 32;
 }
 
 void moveMapLeft() {
 	for (int x = 0; x <= 1; x++) {
 		area.offsetC -= 1;
 		area.tileC -= 1;
-		cursorC = area.offsetC;
+		area.cursorC = area.offsetC;
 
 		cursorReset();
 
 		for (int i = 0; i < 32; i++ ) {
-			if (i < area.offsetR - SCREEN_TILE_HEIGHT/2) worldToScreen(i, cursorC, 32 + area.tileR - area.offsetR + i, area.tileC);
-			else worldToScreen(i, cursorC, area.tileR - area.offsetR + i, area.tileC);
+			if (i < area.offsetR - SCREEN_TILE_HEIGHT/2) worldToScreen(i, area.cursorC, 32 + (area.tileR - area.offsetR) + i, area.tileC);
+			else worldToScreen(i, area.cursorC, area.tileR - area.offsetR + i, area.tileC);
 		}
 	}
 	drawMap();
@@ -88,16 +85,18 @@ void moveMapRight() {
 
 		area.offsetC += 1;
 		area.tileC += 1;
-		cursorC = area.offsetC;
+		area.cursorC = area.offsetC;
 
 		cursorReset();
 
-		int tempCursor = cursorC + SCREEN_TILE_WIDTH;
+		int tempCursor = area.cursorC + SCREEN_TILE_WIDTH;
 		while (tempCursor > 32) tempCursor -= 32;
 	
 		for (int i = 0; i < 32; i++) {
-			if (i < area.offsetR - SCREEN_TILE_HEIGHT/2) worldToScreen(i, tempCursor - 1,  32 + area.tileR - area.offsetR + i, area.tileC + SCREEN_TILE_WIDTH - 1);
-			else worldToScreen(i, tempCursor - 1, area.tileR - area.offsetR + i, area.tileC + SCREEN_TILE_WIDTH - 1);
+			if (i < area.cursorR) worldToScreen(i, tempCursor-1,  area.tileR + i - area.offsetR, area.tileC + SCREEN_TILE_WIDTH - 1);
+		 	else worldToScreen(i, tempCursor - 1, area.tileR - area.cursorR + i, area.tileC + SCREEN_TILE_WIDTH - 1);
+
+	
 		}
 	}
 
@@ -109,20 +108,20 @@ void moveMapUp() {
 		
 		area.tileR -= 1;
 		area.offsetR -= 1;
-		cursorR = area.offsetR;
+		area.cursorR = area.offsetR;
 
 		cursorReset();
 
 		for (int i = 0; i < 32; i++) {
-			if (i < cursorC) worldToScreen(cursorR, i, area.tileR, 32 + i);
-			else worldToScreen(cursorR, i, area.tileR, area.tileC - area.offsetC + i);
+			if (i < area.cursorC) worldToScreen(area.cursorR, i, area.tileR, 32 + i);
+			else worldToScreen(area.cursorR, i, area.tileR, area.tileC - area.offsetC + i);
 		}
 		// for (int i = 0; i < area.offsetC + 1; i++) {
-		// 	worldToScreen(cursorR, i, area.tileR, 32 + i);
+		// 	worldToScreen(area.cursorR, i, area.tileR, 32 + i);
 		// }
 
 		// for (int i = area.offsetC; i < 32; i++) {
-		// 	worldToScreen(cursorR, i, area.tileR, area.tileC - area.offsetC + i);
+		// 	worldToScreen(area.cursorR, i, area.tileR, area.tileC - area.offsetC + i);
 		// }
 	}
 
@@ -134,13 +133,13 @@ void moveMapDown() {
 
 		area.tileR += 1;
 		area.offsetR += 1;
-		cursorR = area.offsetR + SCREEN_TILE_HEIGHT;
+		area.cursorR = area.offsetR + SCREEN_TILE_HEIGHT;
 
 		cursorReset();
 
 		for (int i = 0; i < 32; i++) {
-			if (i < cursorC) worldToScreen(cursorR - 1, i, SCREEN_TILE_HEIGHT + area.tileR-1, 32 + i);
-			else worldToScreen(cursorR - 1, i, SCREEN_TILE_HEIGHT + area.tileR-1, (area.tileC - area.offsetC) + i );
+			if (i < area.cursorC) worldToScreen(area.cursorR - 1, i, SCREEN_TILE_HEIGHT + area.tileR-1, 32 + i);
+			else worldToScreen(area.cursorR - 1, i, SCREEN_TILE_HEIGHT + area.tileR-1, (area.tileC - area.offsetC) + i );
 		}
 
 	}

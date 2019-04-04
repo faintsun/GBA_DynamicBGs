@@ -21,7 +21,7 @@ int hOff = 0;
 int vOff = 0;
 
 OBJ_ATTR shadowOAM[128];
-enum { ROWLOC = 0, COLLOC = 1, ROWNUMS = 2, ROWCURS = 4, COLNUMS = 6, COLCURS = 8 };
+enum { ROWLOC = 0, COLLOC = 1, ROWNUMS = 2, ROWOFF = 4, COLNUMS = 6, COLOFF = 8, ROWCURS = 10, COLCURS = 12 };
 
 int dir = 0;
 int moving = 0;
@@ -68,12 +68,12 @@ void init() {
 	REG_DISPCTL = MODE0 | BG2_ENABLE | SPRITE_ENABLE;
 	REG_BG2CNT = CBB(0) | SBB(31) | BG_SIZE0 | COLOR256;
 
-	loadPalette(littlerootPal);
-	loadMap(littlerootTiles, littlerootTilesLen, littlerootMap, littlerootMapLen, 68, 50, 0, 31);
+	// loadPalette(littlerootPal);
+	// loadMap(littlerootTiles, littlerootTilesLen, littlerootMap, littlerootMapLen, 68, 50, 0, 31);
 
-	// loadPalette(dewfordPal);
-	// loadMap(dewfordTiles, dewfordTilesLen, dewfordMap, dewfordMapLen, 50, 48, 0, 31);
-	initMap(0, 0);
+	loadPalette(dewfordPal);
+	loadMap(dewfordTiles, dewfordTilesLen, dewfordMap, dewfordMapLen, 50, 48, 0, 31);
+	initMap(10, 0);
 
 	DMANow(3, spriteSheetPal, SPRITE_PALETTE, 256);
 	DMANow(3, spriteSheetTiles, &CHARBLOCKBASE[4], spriteSheetTilesLen/2);
@@ -96,17 +96,19 @@ void hideSprites() {
 void draw(AREAMAP* area) {
 	hideSprites();
 
+
 	shadowOAM[ROWLOC].attr0 = ATTR0_WIDE | 16;
-	shadowOAM[ROWLOC].attr1 = 176 | ATTR1_SIZE8;
+	shadowOAM[ROWLOC].attr1 = 152 | ATTR1_SIZE8;
 	shadowOAM[ROWLOC].attr2 = SPRITEOFFSET16(2,0);
 
 	shadowOAM[COLLOC].attr0 = ATTR0_WIDE | 24;
-	shadowOAM[COLLOC].attr1 = 176 | ATTR1_SIZE8;
+	shadowOAM[COLLOC].attr1 = 152 | ATTR1_SIZE8;
 	shadowOAM[COLLOC].attr2 = SPRITEOFFSET16(1,0);
 
+	// draw row values
 	for (int i = 0; i < 2; i++) {
 		shadowOAM[ROWNUMS + i].attr0 = 16;
-		shadowOAM[ROWNUMS + i].attr1 = ATTR1_SIZE8 | (204 - (i*8));
+		shadowOAM[ROWNUMS + i].attr1 = ATTR1_SIZE8 | (176 - (i*8));
 		shadowOAM[ROWNUMS + i].attr2 = SPRITEOFFSET16(0, getDigit(area->tileR, i));	
 	}
 
@@ -114,27 +116,42 @@ void draw(AREAMAP* area) {
 	if (area->offsetR < 0) rNeg = 4;
 
 	for (int i = 0; i < 2; i++) {
-		shadowOAM[ROWCURS + i].attr0 = 16;
-		shadowOAM[ROWCURS + i].attr1 = ATTR1_SIZE8 | (224 - (i*8));
-		shadowOAM[ROWCURS + i].attr2 = SPRITEOFFSET16(rNeg, getDigit(abs(area->offsetR), i));	
+		shadowOAM[ROWOFF + i].attr0 = 16;
+		shadowOAM[ROWOFF + i].attr1 = ATTR1_SIZE8 | (200 - (i*8));
+		shadowOAM[ROWOFF + i].attr2 = SPRITEOFFSET16(rNeg, getDigit(abs(area->offsetR), i));	
 	}
 
-
+	rNeg = 0;
+	if (area->cursorR < 0) rNeg = 4;
 
 	for (int i = 0; i < 2; i++) {
-		shadowOAM[COLNUMS + i].attr0 = 24;
-		shadowOAM[COLNUMS + i].attr1 = ATTR1_SIZE8 | (204 - (i*8));
-		shadowOAM[COLNUMS + i].attr2 = SPRITEOFFSET16(0, getDigit(area->tileC, i));	
+		shadowOAM[ROWCURS + i].attr0 = 16;
+		shadowOAM[ROWCURS + i].attr1 = ATTR1_SIZE8 | (224 - (i*8));
+		shadowOAM[ROWCURS + i].attr2 = SPRITEOFFSET16(rNeg, getDigit(abs(area->cursorR), i));	
 	}
 
+	// draw col values
+	for (int i = 0; i < 2; i++) {
+		shadowOAM[COLNUMS + i].attr0 = 24;
+		shadowOAM[COLNUMS + i].attr1 = ATTR1_SIZE8 | (176 - (i*8));
+		shadowOAM[COLNUMS + i].attr2 = SPRITEOFFSET16(0, getDigit(area->tileC, i));	
+	}
 
 	int cNeg = 0;
 	if (area->offsetC < 0) cNeg = 4;
 
 	for (int i = 0; i < 2; i++) {
+		shadowOAM[COLOFF + i].attr0 = 24;
+		shadowOAM[COLOFF + i].attr1 = ATTR1_SIZE8 | (200 - (i*8));
+		shadowOAM[COLOFF + i].attr2 = SPRITEOFFSET16(cNeg, getDigit(abs(area->offsetC), i));	
+	}
+
+	cNeg = 0;
+	if (area->cursorC < 0) cNeg = 4;
+	for (int i = 0; i < 2; i++) {
 		shadowOAM[COLCURS + i].attr0 = 24;
 		shadowOAM[COLCURS + i].attr1 = ATTR1_SIZE8 | (224 - (i*8));
-		shadowOAM[COLCURS + i].attr2 = SPRITEOFFSET16(cNeg, getDigit(abs(area->offsetC), i));	
+		shadowOAM[COLCURS + i].attr2 = SPRITEOFFSET16(cNeg, getDigit(abs(area->cursorC), i));	
 	}
 
 	DMANow(3, shadowOAM, OAM, 128 * 4);
