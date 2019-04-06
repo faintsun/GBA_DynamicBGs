@@ -74,26 +74,25 @@ void cursorReset() {
 		area.cursorC += 32; area.mapLeft += 32;
 	}
 
-	// wrap from col 32 to col 0
-	if (area.cursorC >= 32) {
+	// wrap from col 33 to col 1
+	if (area.cursorC > 32) {
 		if (area.mapLeft >= 32) area.mapLeft -= 32;
 		area.cursorC -= 32;
 	}
 
 	// wrap from row -1 to row 31
 	if (area.cursorR < 0) { 
-		if (area.mapDown >= 32) area.mapDown -= 32; 
 		area.cursorR += 32; area.mapUp += 32; 
 	}
 
-	// wrap from row 32 to row 0
-	if (area.cursorR >= 32) { 
+	// wrap from row 33 to row 1
+	if (area.cursorR > 32) { 
 		if (area.mapUp >= 32) area.mapUp -= 32;
 		area.cursorR -= 32; 
 	}
 
-	if (area.tileR - area.offsetR == 0) { area.mapDown = 0; area.mapUp = 0; }
-	if (area.tileC - area.offsetC == 0) { area.mapLeft = 0; area.mapRight = 0; }
+	// if (area.tileR - area.offsetR == 0) { area.mapDown = 0; area.mapUp = 0; }
+	// if (area.tileC - area.offsetC == 0) { area.mapLeft = 0; area.mapRight = 0; }
 
 }
 
@@ -106,6 +105,7 @@ void moveMapLeft() {
 
 		for (int i = 0; i < 32; i++ ) {
 			if (i < area.cursorR) worldToScreen(i, area.cursorC, area.tileR - (area.tileR - area.offsetR) + i + area.mapDown, area.tileC);
+			//if (i < area.cursorR) worldToScreen(i, area.cursorC, area.tileR - (area.tileR - area.offsetR) + i + area.mapDown, area.tileC);
 			else worldToScreen(i, area.cursorC, area.tileR - (area.tileR - area.offsetR) + i - area.mapUp, area.tileC);
 		}
 	}
@@ -119,12 +119,12 @@ void moveMapRight() {
 		cursorReset();
 
 		int tempCursor = area.cursorC + SCREEN_TILE_WIDTH;
-		if (tempCursor >= 32) tempCursor -= 32;
+		if (tempCursor > 32) tempCursor -= 32;
 		if ( (area.cursorC + SCREEN_TILE_WIDTH) % 32 == 0 ) area.mapRight += 32; 
 
 		for (int i = 0; i < 32; i++) {
-			if (i < area.cursorR) worldToScreen(i, tempCursor, area.tileR - (area.tileR - area.offsetR) + i + area.mapDown, area.tileC + SCREEN_TILE_WIDTH);
-		 	else worldToScreen(i, tempCursor, area.tileR - (area.tileR - area.offsetR) + i - area.mapUp, area.tileC + SCREEN_TILE_WIDTH);
+			if (i < area.cursorR) worldToScreen(i, tempCursor-1, area.tileR - (area.tileR - area.offsetR) + i + area.mapDown, area.tileC + SCREEN_TILE_WIDTH - 1);
+		 	else worldToScreen(i, tempCursor-1, area.tileR - (area.tileR - area.offsetR) + i - area.mapUp, area.tileC + SCREEN_TILE_WIDTH - 1);
 		}
 	}
 	drawMap();	
@@ -135,6 +135,7 @@ void moveMapUp() {
 		area.tileR--; area.cursorR--;
 
 		cursorReset();
+		if ( (area.cursorR + SCREEN_TILE_HEIGHT) % 32 == 0 ) area.mapDown -= 32; 
 
 		for (int i = 0; i < 32; i++) {
 			if (i < area.cursorC) worldToScreen(area.cursorR, i, area.tileR, area.tileC - (area.tileC - area.offsetC) + i + area.mapRight );
@@ -151,12 +152,12 @@ void moveMapDown() {
 		cursorReset();
 
 		int tempCursor = area.cursorR + SCREEN_TILE_HEIGHT;
-		if (tempCursor >= 32) tempCursor -= 32;
+		if (tempCursor > 32) tempCursor -= 32;
 		if ( (area.cursorR + SCREEN_TILE_HEIGHT) % 32 == 0 ) area.mapDown += 32; 
 
 		for (int i = 0; i < 32; i++) {
-			if (i < area.cursorC) worldToScreen(tempCursor, i, SCREEN_TILE_HEIGHT + area.tileR, area.tileC - (area.tileC - area.offsetC) + i + area.mapRight);
-			else worldToScreen(tempCursor, i, SCREEN_TILE_HEIGHT + area.tileR, area.tileC - (area.tileC - area.offsetC) + i - area.mapLeft );
+			if (i < area.cursorC) worldToScreen(tempCursor-1, i, SCREEN_TILE_HEIGHT + area.tileR-1, area.tileC - (area.tileC - area.offsetC) + i + area.mapRight);
+			else worldToScreen(tempCursor-1, i, SCREEN_TILE_HEIGHT + area.tileR-1, area.tileC - (area.tileC - area.offsetC) + i - area.mapLeft );
 		}
 	}
 	drawMap();
