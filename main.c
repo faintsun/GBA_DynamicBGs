@@ -27,8 +27,6 @@ int dir = 0;
 int moving = 0;
 int dirTimer;
 
-
-
 extern const unsigned short* palette;
 
 
@@ -73,7 +71,7 @@ void init() {
 
 	loadPalette(dewfordPal);
 	loadMap(dewfordTiles, dewfordTilesLen, dewfordMap, dewfordMapLen, 50, 48, 0, 31);
-	initMap(8,0);
+	initMap(0, 8);
 
 	DMANow(3, spriteSheetPal, SPRITE_PALETTE, 256);
 	DMANow(3, spriteSheetTiles, &CHARBLOCKBASE[4], spriteSheetTilesLen/2);
@@ -127,7 +125,7 @@ void draw(AREAMAP* area) {
 	for (int i = 0; i < 2; i++) {
 		shadowOAM[ROWCURS + i].attr0 = 16;
 		shadowOAM[ROWCURS + i].attr1 = ATTR1_SIZE8 | (224 - (i*8));
-		shadowOAM[ROWCURS + i].attr2 = SPRITEOFFSET16(rNeg, getDigit(abs(area->cursorR), i));	
+		shadowOAM[ROWCURS + i].attr2 = SPRITEOFFSET16(rNeg, getDigit(abs(area->mapLeft), i));	
 	}
 
 	// draw col values
@@ -151,7 +149,7 @@ void draw(AREAMAP* area) {
 	for (int i = 0; i < 2; i++) {
 		shadowOAM[COLCURS + i].attr0 = 24;
 		shadowOAM[COLCURS + i].attr1 = ATTR1_SIZE8 | (224 - (i*8));
-		shadowOAM[COLCURS + i].attr2 = SPRITEOFFSET16(cNeg, getDigit(abs(area->cursorC), i));	
+		shadowOAM[COLCURS + i].attr2 = SPRITEOFFSET16(cNeg, getDigit(abs(area->mapRight), i));	
 	}
 
 	DMANow(3, shadowOAM, OAM, 128 * 4);
