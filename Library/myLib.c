@@ -9,10 +9,7 @@ unsigned short *backBuffer =  (u16 *)0x600A000;
 
 DMA *dma = (DMA *)0x40000B0;
 
-void loadPalette(const unsigned short* palette)
-{
-	DMANow(3, (unsigned short*)palette, PALETTE, 256);
-}
+
 
 
 void DMANow(int channel, volatile const void* source, volatile const void* destination, unsigned int control) {

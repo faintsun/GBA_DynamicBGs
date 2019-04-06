@@ -27,7 +27,7 @@ int dir = 0;
 int moving = 0;
 int dirTimer;
 
-extern const unsigned short* palette;
+
 
 
 
@@ -94,7 +94,7 @@ void hideSprites() {
 void draw(AREAMAP* area) {
 	hideSprites();
 
-
+	// draws col/row variables to screen
 	shadowOAM[ROWLOC].attr0 = ATTR0_WIDE | 16;
 	shadowOAM[ROWLOC].attr1 = 152 | ATTR1_SIZE8;
 	shadowOAM[ROWLOC].attr2 = SPRITEOFFSET16(2,0);
@@ -226,11 +226,6 @@ void cameraHandler() {
 
 void updateScreenLocations() {
 
-	// if (hOff > 256) {
-	// 	hOff = 0;
-	// 	DMANow(3, bg2Tiles, &CHARBLOCKBASE[0], bg2TilesLen/2);
-	// 	DMANow(3, bg2Map, &SCREENBLOCKBASE[28], bg2MapLen/2);
-	// }
 	REG_BG2HOFS = hOff;
 	REG_BG2VOFS = vOff;
 }
