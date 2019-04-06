@@ -19,18 +19,27 @@ typedef struct {
 	int mapDown;
 	int mapLeft;
 	int mapRight;
+} CURRENTMAP;
+
+typedef struct {
+	const u16* tiles;
+	u16 tlen;
+	const u16* map;
+	u16 mlen;
+	u16 tilew;
+	u16 tileh;
+	u8 cbb;
+	u8 sbb;
 } AREAMAP;
 
 // Variables
-extern AREAMAP area;
+extern CURRENTMAP area;
 extern const unsigned short* palette;
 
 // Prototypes
-void loadMap(const unsigned short*, const unsigned short, const unsigned short*, const unsigned short, 
-			unsigned short, unsigned short, unsigned char, unsigned char);
+void loadMap(AREAMAP*, int, int);
 void loadPalette(const unsigned short*);
 void drawMap();
-void initMap(int, int);
 void worldToScreen(int, int, int, int);
 void cursorReset();
 void moveMapLeft();

@@ -1,49 +1,32 @@
-#include "mapHandler.h"
 #include "myLib.h"
+#include "mapHandler.h"
+
 
 #include <stdio.h>
 #include <stdlib.h>
 
 // Variables
-AREAMAP area;
+CURRENTMAP area;
 const unsigned short* palette;
 
 // Use this when entering a new area to load the area's tiles & map
-void loadMap(const unsigned short* tiles, const unsigned short tlen, 	// tiles of new area
-				const unsigned short* map, const unsigned short mlen,   // map of new area
-				unsigned short tilew, unsigned short tileh,				// width and height of area in 8x8 tiles
-				unsigned char cbb, unsigned char sbb) {			 		// where to put in videobuffer
+void loadMap(AREAMAP* m, int r, int c) {			 		
 
-	area.worldTileLen = tlen;
-	area.worldMapLen = mlen;
-	area.worldTileW = tilew;
-	area.worldTileH = tileh;
-	area.CBB_LOC = cbb;
-	area.SBB_LOC = sbb;
+	area.worldTileLen = m->tlen;
+	area.worldMapLen = m->mlen;
+	area.worldTileW = m->tilew;
+	area.worldTileH = m->tileh;
+	area.CBB_LOC = m->cbb;
+	area.SBB_LOC = m->sbb;
 
-	DMANow(3, tiles, area.WORLD_TILES, tlen/2); 
-	DMANow(3, map, area.WORLD_MAP, mlen/2);
+	DMANow(3, m->tiles, area.WORLD_TILES, area.worldTileLen/2); 
+	DMANow(3, m->map, area.WORLD_MAP, area.worldMapLen/2);
 
 	DMANow(3, area.WORLD_TILES, &CHARBLOCKBASE[area.CBB_LOC], area.worldTileLen/2);
-	
-}
-
-void loadPalette(const unsigned short* palette) {
-	DMANow(3, (unsigned short*)palette, PALETTE, 256);
-}
-
-// Copies the screen map into the screenblock base
-void drawMap() {
-	DMANow(3, area.SCREEN_MAP, &SCREENBLOCKBASE[area.SBB_LOC], 1024);
-}
-
-// Use this when entering a new area to draw the intial map at the player's location
-void initMap(int r, int c) {
-	// make a 256x256 map with r and c being the top left tile
-	// NOTE: r and c are 'tile' positions, not 'pixel' positions (1 tile = 8 pixels)
 	for (int i = 0; i < 32; i++) {
-		DMANow(3, &area.WORLD_MAP[OFFSET(i + r, 0 + c, area.worldTileW)], &area.SCREEN_MAP[OFFSET(i, 0, 32)], 32);
+		DMANow(3, &area.WORLD_MAP[OFFSET(i + r, c, area.worldTileW)], &area.SCREEN_MAP[OFFSET(i, 0, 32)], 32);
 	}
+
 	area.tileR = r;
 	area.tileC = c;
 	area.offsetR = r;
@@ -58,6 +41,16 @@ void initMap(int r, int c) {
 
 	drawMap();
 }
+
+void loadPalette(const unsigned short* palette) {
+	DMANow(3, (unsigned short*)palette, PALETTE, 256);
+}
+
+// Copies the screen map into the screenblock base
+void drawMap() {
+	DMANow(3, area.SCREEN_MAP, &SCREENBLOCKBASE[area.SBB_LOC], 1024);
+}
+
 
 // helper function to update the screen's map so the move functions are less cluttered
 void worldToScreen(int screenR, int screenC, int worldR, int worldC) {

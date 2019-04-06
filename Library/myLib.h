@@ -2,6 +2,7 @@
 #define MY_LIB_H
 
 typedef unsigned short u16;
+typedef unsigned char u8;
 
 #define ROWMASK (0xFF)
 #define COLMASK (0x1FF)
