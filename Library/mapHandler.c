@@ -64,8 +64,15 @@ void worldToScreen(int screenR, int screenC, int worldR, int worldC) {
 }
 
 void cursorReset() {
-	if (area.cursorC < 0) { area.cursorC += 32; }
-	if (area.cursorC > 32) area.cursorC -= 32;
+	if (area.cursorC < 0) { 
+		if (area.mapRight >= 32) area.mapRight -= 32;
+		area.cursorC += 32; area.mapLeft += 32;
+	}
+
+	if (area.cursorC > 32) {
+		if (area.mapLeft >= 32) area.mapLeft -= 32;
+		area.cursorC -= 32;
+	}
 
 	// start drawing from row 32
 	if (area.cursorR < 0) { 
@@ -80,6 +87,8 @@ void cursorReset() {
 	}
 
 	if (area.tileR - area.offsetR == 0) { area.mapDown = 0; area.mapUp = 0; }
+	if (area.tileC - area.offsetC == 0) { area.mapLeft = 0; area.mapRight = 0; }
+
 
 }
 
@@ -106,6 +115,8 @@ void moveMapRight() {
 		area.tileC += 1;
 		area.cursorC += 1;
 
+		if ( (area.cursorC + SCREEN_TILE_WIDTH) % 32 == 0 ) area.mapRight += 32; 
+
 		int tempCursor = area.cursorC + SCREEN_TILE_WIDTH;
 		if (tempCursor > 32) tempCursor -= 32;
 
@@ -130,8 +141,8 @@ void moveMapUp() {
 		cursorReset();
 
 		for (int i = 0; i < 32; i++) {
-			if (i < area.cursorC) worldToScreen(area.cursorR, i, area.tileR, area.tileC - (area.tileC - area.offsetC) + i );
-			else worldToScreen(area.cursorR, i, area.tileR, area.tileC - (area.tileC - area.offsetC) + i );
+			if (i < area.cursorC) worldToScreen(area.cursorR, i, area.tileR, area.tileC - (area.tileC - area.offsetC) + i + area.mapRight );
+			else worldToScreen(area.cursorR, i, area.tileR, area.tileC - (area.tileC - area.offsetC) + i - area.mapLeft);
 		}
 
 	}
@@ -154,9 +165,8 @@ void moveMapDown() {
 		cursorReset();
 
 		for (int i = 0; i < 32; i++) {
-			if (i < area.cursorC) worldToScreen(tempCursor-1, i, SCREEN_TILE_HEIGHT + area.tileR-1, area.tileC - (area.tileC - area.offsetC) + i);
-			//else worldToScreen(area.cursorR - 1, i, SCREEN_TILE_HEIGHT + area.tileR-1, area.tileC - area.cursorC + i );
-			else worldToScreen(tempCursor-1, i, SCREEN_TILE_HEIGHT + area.tileR-1, area.tileC - (area.tileC - area.offsetC) + i );
+			if (i < area.cursorC) worldToScreen(tempCursor-1, i, SCREEN_TILE_HEIGHT + area.tileR-1, area.tileC - (area.tileC - area.offsetC) + i + area.mapRight);
+			else worldToScreen(tempCursor-1, i, SCREEN_TILE_HEIGHT + area.tileR-1, area.tileC - (area.tileC - area.offsetC) + i - area.mapLeft );
 
 		}
 

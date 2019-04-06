@@ -45,3 +45,5 @@ void moveMapLeft();
 void moveMapRight();
 void moveMapUp();
 void moveMapDown();
+
+int getBaseRow(int, int);

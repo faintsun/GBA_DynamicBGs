@@ -116,7 +116,7 @@ void draw(AREAMAP* area) {
 	for (int i = 0; i < 2; i++) {
 		shadowOAM[ROWOFF + i].attr0 = 16;
 		shadowOAM[ROWOFF + i].attr1 = ATTR1_SIZE8 | (200 - (i*8));
-		shadowOAM[ROWOFF + i].attr2 = SPRITEOFFSET16(rNeg, getDigit(abs(area->offsetR), i));	
+		shadowOAM[ROWOFF + i].attr2 = SPRITEOFFSET16(rNeg, getDigit(abs(area->cursorR), i));	
 	}
 
 	rNeg = 0;
@@ -141,7 +141,7 @@ void draw(AREAMAP* area) {
 	for (int i = 0; i < 2; i++) {
 		shadowOAM[COLOFF + i].attr0 = 24;
 		shadowOAM[COLOFF + i].attr1 = ATTR1_SIZE8 | (200 - (i*8));
-		shadowOAM[COLOFF + i].attr2 = SPRITEOFFSET16(cNeg, getDigit(abs(area->offsetC), i));	
+		shadowOAM[COLOFF + i].attr2 = SPRITEOFFSET16(cNeg, getDigit(abs(area->cursorC), i));	
 	}
 
 	cNeg = 0;
