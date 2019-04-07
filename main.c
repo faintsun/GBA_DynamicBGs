@@ -8,8 +8,7 @@
 
 // backgrounds
 
-#include "Maps/littleroot.h"
-#include "Maps/dewford.h"
+#include "Maps/mapList.h"
 #include "Maps/spriteSheet.h"
 
 
@@ -28,11 +27,6 @@ int moving = 0;
 int dirTimer;
 
 AREAMAP* currMap;
-AREAMAP DEWFORD_OVERWORLD;
-AREAMAP LITTLEROOT_OVERWORLD;
-
-
-
 
 
 // prototypes
@@ -70,26 +64,10 @@ void init() {
 	REG_DISPCTL = MODE0 | BG2_ENABLE | SPRITE_ENABLE;
 	REG_BG2CNT = CBB(0) | SBB(31) | BG_SIZE0 | COLOR256;
 
-	DEWFORD_OVERWORLD.tiles = dewfordTiles;
-	DEWFORD_OVERWORLD.tlen = dewfordTilesLen;
-	DEWFORD_OVERWORLD.map = dewfordMap;
-	DEWFORD_OVERWORLD.mlen = dewfordMapLen;
-	DEWFORD_OVERWORLD.tilew = 50;
-	DEWFORD_OVERWORLD.tileh = 48;
-	DEWFORD_OVERWORLD.cbb = 0;
-	DEWFORD_OVERWORLD.sbb = 31;
+	initMapArray();
 
-	LITTLEROOT_OVERWORLD.tiles = littlerootTiles;
-	LITTLEROOT_OVERWORLD.tlen = littlerootTilesLen;
-	LITTLEROOT_OVERWORLD.map = littlerootMap;
-	LITTLEROOT_OVERWORLD.mlen = littlerootMapLen;
-	LITTLEROOT_OVERWORLD.tilew = 68;
-	LITTLEROOT_OVERWORLD.tileh = 50;
-	LITTLEROOT_OVERWORLD.cbb = 0;
-	LITTLEROOT_OVERWORLD.sbb = 31;
-
-	currMap = &DEWFORD_OVERWORLD;
-	loadPalette(dewfordPal);
+	currMap = &MAP_ARRAY[LITTLEROOT_TOWN];
+	loadPalette(currMap->pal);
 	loadMap(currMap, 8, 8);
 
 
@@ -98,17 +76,12 @@ void init() {
 
 
 	dirTimer = 16;
-
-
 }
-
-
 
 void hideSprites() {
     for (int i = 0; i < 128; i++) {
     	shadowOAM[i].attr0 = ATTR0_HIDE;
     }
-
 }
 
 void draw(CURRENTMAP* a) {
@@ -171,26 +144,24 @@ void draw(CURRENTMAP* a) {
 		shadowOAM[COLCURS + i].attr1 = ATTR1_SIZE8 | (224 - (i*8));
 		shadowOAM[COLCURS + i].attr2 = SPRITEOFFSET16(cNeg, getDigit(abs(a->mapDown), i));	
 	}
-
 	DMANow(3, shadowOAM, OAM, 128 * 4);
 
 }
-
 
 void buttonHandler(CURRENTMAP* a) {
 	oldButtons = buttons;
 	buttons = BUTTONS;
 
 	if (BUTTON_PRESSED(BUTTON_A)) {
-		AREAMAP* currMap = &LITTLEROOT_OVERWORLD;
-		loadPalette(littlerootPal);
+		//AREAMAP* currMap = &LITTLEROOT_OVERWORLD;
+		//loadPalette(littlerootPal);
 		loadMap(currMap, 0, 0);
 		hOff = 0; vOff = 0;
 	}
 
 	if (BUTTON_PRESSED(BUTTON_B)) {
-		AREAMAP* currMap = &DEWFORD_OVERWORLD;
-		loadPalette(dewfordPal);
+		//AREAMAP* currMap = &DEWFORD_OVERWORLD;
+		//loadPalette(dewfordPal);
 		loadMap(currMap, 0, 0);
 		hOff = 0; vOff = 0;
 	}

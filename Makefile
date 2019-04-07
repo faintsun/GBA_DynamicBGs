@@ -1,5 +1,6 @@
 PRODUCT_NAME       = DynamicBG
-SRC            	   = $(wildcard *.c Library/*.c Maps/*.c)
+SRC            	   := $(wildcard *.c */*.c */*/*.c)
+# */*/*.cpp */*/*/*.cpp)
 DKPATH             = C:/devkitARM/bin
 CCPATH             = C:/cygwin64/bin
 VBASIM             = C:/vba/VisualBoyAdvance.exe
@@ -71,5 +72,7 @@ $(REMOVE) : $(RM) $(wildcard *.o *.i *.s)
 
 clean:
 	$(RM) $(ROM_NAME) $(ELF_NAME)  $(BIN_NAME)
-	$(RM) $(wildcard *.o *.i *.s)
+	$(RM) $(wildcard *.o */*.o */*/*.o)
+	$(RM) $(wildcard *.i */*.i */*/*.i)
+	$(RM) $(wildcard *.s */*.s */*/*.s)
 
