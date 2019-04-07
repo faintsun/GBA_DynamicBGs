@@ -1,6 +1,5 @@
 PRODUCT_NAME       = DynamicBG
 SRC            	   := $(wildcard *.c */*.c */*/*.c)
-# */*/*.cpp */*/*/*.cpp)
 DKPATH             = C:/devkitARM/bin
 CCPATH             = C:/cygwin64/bin
 VBASIM             = C:/vba/VisualBoyAdvance.exe
@@ -54,7 +53,6 @@ run : $(ROM_NAME)
 build : $(ROM_NAME)
 		
 
-
 # --- Build .elf file into .gba ROM file
 $(ROM_NAME) : $(ELF_NAME)
 	$(OBJCOPY) $(OBJCOPYFLAGS) $(ELF_NAME) $(ROM_NAME)
@@ -68,9 +66,12 @@ $(ELF_NAME) : $(OBJECTS)
 $(OBJECTS) : %.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(REMOVE) : $(RM) $(wildcard *.o *.i *.s)
-
 clean:
+	$(RM) $(wildcard *.o */*.o */*/*.o)
+	$(RM) $(wildcard *.i */*.i */*/*.i)
+	$(RM) $(wildcard *.s */*.s */*/*.s)
+
+cleanall:
 	$(RM) $(ROM_NAME) $(ELF_NAME)  $(BIN_NAME)
 	$(RM) $(wildcard *.o */*.o */*/*.o)
 	$(RM) $(wildcard *.i */*.i */*/*.i)

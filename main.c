@@ -11,7 +11,6 @@
 #include "Maps/mapList.h"
 #include "Maps/spriteSheet.h"
 
-
 // variables
 unsigned int buttons;
 unsigned int oldButtons;
@@ -27,7 +26,6 @@ int moving = 0;
 int dirTimer;
 
 AREAMAP* currMap;
-
 
 // prototypes
 void (*nextMove)();
@@ -66,7 +64,7 @@ void init() {
 
 	initMapArray();
 
-	currMap = &MAP_ARRAY[LITTLEROOT_TOWN];
+	currMap = &(*MAP_ARRAY)[LITTLEROOT_TOWN];
 	loadPalette(currMap->pal);
 	loadMap(currMap, 8, 8);
 
