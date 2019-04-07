@@ -18,12 +18,11 @@ int main() {
 
 	while(1) {
 
-		buttonHandler(&area);
+		buttonHandler(CURRENT_AREA_P);
 		cameraHandler();
 
-
 		updateScreenLocations();
-		draw(&area);
+		draw();
 		waitForVblank();
 
 
@@ -36,14 +35,14 @@ int main() {
 void init() {
 
 	REG_DISPCTL = MODE0 | BG2_ENABLE | SPRITE_ENABLE;
-	REG_BG2CNT = CBB(0) | SBB(31) | BG_SIZE0 | COLOR256;
+	REG_BG2CNT = CBB(0) | SBB(AREA_BG2_SBB) | BG_SIZE0 | COLOR256;
 
-	initMapArray();
+	initialize_mapHandler();
+	initialize_mapList();
 
 	currMap = &(*MAP_ARRAY)[LITTLEROOT_TOWN];
-	loadPalette(currMap->pal);
+	loadPalette(currMap);
 	loadMap(currMap, 8, 8);
-
 
 	DMANow(3, spriteSheetPal, SPRITE_PALETTE, 256);
 	DMANow(3, spriteSheetTiles, &CHARBLOCKBASE[4], spriteSheetTilesLen/2);
@@ -58,9 +57,85 @@ void hideSprites() {
     }
 }
 
-void draw(CURRENTMAP* a) {
+void draw() {
 	hideSprites();
+	drawHelperNumbers(CURRENT_AREA_P);
+	DMANow(3, shadowOAM, OAM, 128 * 4);
 
+}
+
+void buttonHandler(CURRENTMAP* a) {
+	oldButtons = buttons;
+	buttons = BUTTONS;
+
+	if (!moving) {
+		int inputCheck = 0;
+		if(BUTTON_HELD(BUTTON_RIGHT)) {
+			if (a->tileC < a->worldTileW - SCREEN_TILE_WIDTH) {
+				nextMove = moveMapRight;
+				inputCheck = 1;
+			}
+		}
+
+		else if(BUTTON_HELD(BUTTON_LEFT)) {
+			if (a->tileC > 0) {
+				nextMove = moveMapLeft;
+				inputCheck = 1;
+			}
+		}
+		else if(BUTTON_HELD(BUTTON_DOWN)) {
+			if (a->tileR < a->worldTileH - SCREEN_TILE_HEIGHT - 2) {
+				nextMove = moveMapDown;
+				inputCheck = 1;
+			}
+		}
+		else if(BUTTON_HELD(BUTTON_UP)) {
+			if (a->tileR > 0) {
+				nextMove = moveMapUp;
+				inputCheck = 1;
+			}
+
+		}
+
+		if (inputCheck) {
+			moving = 1;
+			nextMove();
+		}
+	}
+
+}
+
+void cameraHandler() {
+
+
+	if (moving) {
+		dirTimer--;
+		if (nextMove == moveMapLeft) {
+			hOff--;
+		} else if (nextMove == moveMapRight) {
+			hOff++;
+		} else if (nextMove == moveMapDown) {
+			vOff++;
+		} else if (nextMove == moveMapUp) {
+			vOff--;
+		}
+
+		if (dirTimer < 1) {
+
+			dirTimer = 16;
+			moving = 0;
+		}
+	}
+}
+
+
+void updateScreenLocations() {
+
+	REG_BG2HOFS = hOff;
+	REG_BG2VOFS = vOff;
+}
+
+void drawHelperNumbers(CURRENTMAP* a) {
 	// draws col/row variables to screen
 	shadowOAM[ROWLOC].attr0 = ATTR0_WIDE | 16;
 	shadowOAM[ROWLOC].attr1 = 152 | ATTR1_SIZE8;
@@ -118,93 +193,4 @@ void draw(CURRENTMAP* a) {
 		shadowOAM[COLCURS + i].attr1 = ATTR1_SIZE8 | (224 - (i*8));
 		shadowOAM[COLCURS + i].attr2 = SPRITEOFFSET16(cNeg, getDigit(abs(a->mapDown), i));	
 	}
-	DMANow(3, shadowOAM, OAM, 128 * 4);
-
-}
-
-void buttonHandler(CURRENTMAP* a) {
-	oldButtons = buttons;
-	buttons = BUTTONS;
-
-	if (BUTTON_PRESSED(BUTTON_A)) {
-		//AREAMAP* currMap = &LITTLEROOT_OVERWORLD;
-		//loadPalette(littlerootPal);
-		loadMap(currMap, 0, 0);
-		hOff = 0; vOff = 0;
-	}
-
-	if (BUTTON_PRESSED(BUTTON_B)) {
-		//AREAMAP* currMap = &DEWFORD_OVERWORLD;
-		//loadPalette(dewfordPal);
-		loadMap(currMap, 0, 0);
-		hOff = 0; vOff = 0;
-	}
-
-	if (!moving) {
-		int inputCheck = 0;
-		if(BUTTON_HELD(BUTTON_RIGHT)) {
-			if (a->tileC < a->worldTileW - SCREEN_TILE_WIDTH) {
-				nextMove = moveMapRight;
-				inputCheck = 1;
-
-			}
-		}
-
-		else if(BUTTON_HELD(BUTTON_LEFT)) {
-			if (a->tileC > 0) {
-				nextMove = moveMapLeft;
-				inputCheck = 1;
-			}
-		}
-		else if(BUTTON_HELD(BUTTON_DOWN)) {
-			if (a->tileR < a->worldTileH - SCREEN_TILE_HEIGHT - 2) {
-				nextMove = moveMapDown;
-				inputCheck = 1;
-			}
-		}
-		else if(BUTTON_HELD(BUTTON_UP)) {
-			if (a->tileR > 0) {
-				nextMove = moveMapUp;
-				inputCheck = 1;
-			}
-
-		}
-
-		if (inputCheck) {
-			moving = 1;
-			nextMove();
-		}
-	}
-
-}
-
-void cameraHandler() {
-
-
-	if (moving) {
-		dirTimer--;
-		if (nextMove == moveMapLeft) {
-			hOff--;
-		} else if (nextMove == moveMapRight) {
-			hOff++;
-		} else if (nextMove == moveMapDown) {
-			vOff++;
-		} else if (nextMove == moveMapUp) {
-			vOff--;
-		}
-
-		if (dirTimer < 1) {
-
-			dirTimer = 16;
-			moving = 0;
-		}
-	}
-}
-
-
-
-void updateScreenLocations() {
-
-	REG_BG2HOFS = hOff;
-	REG_BG2VOFS = vOff;
 }

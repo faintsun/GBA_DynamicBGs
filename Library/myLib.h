@@ -51,7 +51,6 @@ extern unsigned short *backBuffer;
 
 
 // Prototypes
-void loadPalette(const unsigned short* palette);
 void initialize();
 
 void waitForVblank();

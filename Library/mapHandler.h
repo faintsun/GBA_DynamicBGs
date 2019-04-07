@@ -1,8 +1,11 @@
+#define AREA_TILE_CBB 0
+#define AREA_BG2_SBB 28
+
 // Structs
 typedef struct {
-	unsigned short SCREEN_MAP[1024];
+	unsigned short SCREEN_MAP_BG2[1024];
 	unsigned short WORLD_TILES[8000];
-	unsigned short WORLD_MAP[3500];
+	unsigned short WORLD_MAP_BG2[3500];
 	int worldTileLen;
 	unsigned short worldMapLen;
 	unsigned short worldTileW;
@@ -22,33 +25,25 @@ typedef struct {
 } CURRENTMAP;
 
 typedef struct {
-	// const u16* tiles;
-	// u16 tlen;
-	// const u16* map;
-	// u16 mlen;
-	// const u16* pal;
-	// u16 tilew;
-	// u16 tileh;
-	// u8 cbb;
-	// u8 sbb;
 	const unsigned short* tiles;
 	unsigned short tlen;
-	const unsigned short* map;
+	const unsigned short* map_BG2;
 	unsigned short mlen;
 	const unsigned short* pal;
 	unsigned short tilew;
 	unsigned short tileh;
-	unsigned char cbb;
-	unsigned char sbb;
 } AREAMAP;
+
 
 // Variables
 extern CURRENTMAP area;
+extern CURRENTMAP* CURRENT_AREA_P;
 extern const unsigned short* palette;
 
 // Prototypes
+void initialize_mapHandler();
 void loadMap(AREAMAP*, int, int);
-void loadPalette(const unsigned short*);
+void loadPalette(AREAMAP*);
 void drawMap();
 void worldToScreen(int, int, int, int);
 void cursorReset();

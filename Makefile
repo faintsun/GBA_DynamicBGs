@@ -67,13 +67,13 @@ $(OBJECTS) : %.o : %.c
 	$(CC) $(CFLAGS) -c $< -o $@
 
 clean:
-	$(RM) $(wildcard *.o */*.o */*/*.o)
-	$(RM) $(wildcard *.i */*.i */*/*.i)
-	$(RM) $(wildcard *.s */*.s */*/*.s)
+	$(RM) $(wildcard *.o)
+	$(RM) $(wildcard *.i)
+	$(RM) $(wildcard *.s)
 
 cleanall:
 	$(RM) $(ROM_NAME) $(ELF_NAME)  $(BIN_NAME)
-	$(RM) $(wildcard *.o */*.o */*/*.o)
-	$(RM) $(wildcard *.i */*.i */*/*.i)
-	$(RM) $(wildcard *.s */*.s */*/*.s)
+	$(RM) $(wildcard *.o)
+	$(RM) $(wildcard *.i)
+	$(RM) $(wildcard *.s)
 

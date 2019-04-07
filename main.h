@@ -23,3 +23,5 @@ void updateScreenLocations();
 void buttonHandler();
 void cameraHandler();
 void hideSprites();
+
+void drawHelperNumbers(CURRENTMAP* a);

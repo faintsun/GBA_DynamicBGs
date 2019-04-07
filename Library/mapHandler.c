@@ -7,7 +7,12 @@
 
 // Variables
 CURRENTMAP area;
+CURRENTMAP* CURRENT_AREA_P;
 const unsigned short* palette;
+
+void initialize_mapHandler() {
+	CURRENT_AREA_P = &area;
+}
 
 // Use this when entering a new area to load the area's tiles & map
 void loadMap(AREAMAP* m, int r, int c) {			 		
@@ -16,15 +21,13 @@ void loadMap(AREAMAP* m, int r, int c) {
 	area.worldMapLen = m->mlen;
 	area.worldTileW = m->tilew;
 	area.worldTileH = m->tileh;
-	area.CBB_LOC = m->cbb;
-	area.SBB_LOC = m->sbb;
 
 	DMANow(3, m->tiles, area.WORLD_TILES, area.worldTileLen/2); 
-	DMANow(3, m->map, area.WORLD_MAP, area.worldMapLen/2);
+	DMANow(3, m->map_BG2, area.WORLD_MAP_BG2, area.worldMapLen/2);
 
-	DMANow(3, area.WORLD_TILES, &CHARBLOCKBASE[area.CBB_LOC], area.worldTileLen/2);
+	DMANow(3, area.WORLD_TILES, &CHARBLOCKBASE[AREA_TILE_CBB], area.worldTileLen/2);
 	for (int i = 0; i < 32; i++) {
-		DMANow(3, &area.WORLD_MAP[OFFSET(i + r, c, area.worldTileW)], &area.SCREEN_MAP[OFFSET(i, 0, 32)], 32);
+		DMANow(3, &area.WORLD_MAP_BG2[OFFSET(i + r, c, area.worldTileW)], &area.SCREEN_MAP_BG2[OFFSET(i, 0, 32)], 32);
 	}
 
 	area.tileR = r;
@@ -42,20 +45,20 @@ void loadMap(AREAMAP* m, int r, int c) {
 	drawMap();
 }
 
-void loadPalette(const unsigned short* palette) {
-	DMANow(3, (unsigned short*)palette, PALETTE, 256);
+void loadPalette(AREAMAP* m) {
+	DMANow(3, (unsigned short*)m->pal, PALETTE, 256);
 }
 
 // Copies the screen map into the screenblock base
 void drawMap() {
-	DMANow(3, area.SCREEN_MAP, &SCREENBLOCKBASE[area.SBB_LOC], 1024);
+	DMANow(3, area.SCREEN_MAP_BG2, &SCREENBLOCKBASE[AREA_BG2_SBB], 1024);
 }
 
 
 // helper function to update the screen's map so the move functions are less cluttered
 void worldToScreen(int screenR, int screenC, int worldR, int worldC) {
-	area.SCREEN_MAP[ OFFSET(screenR, screenC, 32) ] = 
-		area.WORLD_MAP[ OFFSET(worldR, worldC, area.worldTileW) ];
+	area.SCREEN_MAP_BG2[ OFFSET(screenR, screenC, 32) ] = 
+		area.WORLD_MAP_BG2[ OFFSET(worldR, worldC, area.worldTileW) ];
 }
 
 // keeps the cursor within 0 and 32
