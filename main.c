@@ -7,7 +7,9 @@
 
 // maps
 #include "Maps/mapList.h"
-#include "Maps/spriteSheet.h"
+
+// sprites
+#include "Sprites/spriteSheet.h"
 
 // header
 #include "main.h"
@@ -94,7 +96,6 @@ void buttonHandler(CURRENTMAP* a) {
 				nextMove = moveMapUp;
 				inputCheck = 1;
 			}
-
 		}
 
 		if (inputCheck) {
