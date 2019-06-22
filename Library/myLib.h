@@ -89,6 +89,7 @@ extern unsigned int buttons;
 
 #define BUTTON_HELD(key)  (~(BUTTONS) & (key))
 #define BUTTON_PRESSED(key) (!(~(oldButtons)&(key)) && (~buttons & (key)))
+#define DIRPAD_HELD (BUTTON_HELD(BUTTON_LEFT) | BUTTON_HELD(BUTTON_RIGHT) | (BUTTON_HELD(BUTTON_UP) | BUTTON_HELD(BUTTON_DOWN)))
 
 // *** DMA =========================================================
 
@@ -224,6 +225,7 @@ extern DMA *dma;
 typedef struct { u16 tileimg[8192]; } charblock;
 typedef struct { u16 tilemap[1024]; } screenblock;
 
+#define CHARBLOCK_SPRITE ( (unsigned short*)0x6010000)
 #define CHARBLOCKBASE ((charblock *)0x6000000)
 #define CHARBLOCKBASE_MAP (0x6000000)
 #define SCREENBLOCKBASE ((screenblock *)0x6000000)
