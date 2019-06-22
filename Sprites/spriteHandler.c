@@ -2,9 +2,14 @@
 #include "spriteSheet.h"
 #include "../Library/myLib.h"
 
-void dmaSpriteSheet(unsigned short * spriteTiles, int origRow, int origCol, int sheetRow, int sheetCol, int width, int height) {
+void dmaSpriteSheet(unsigned short * spriteTiles, 
+					int origRow, int origCol, 
+					int sheetRow, int sheetCol, 
+					int width, int height) {
 	for (int i = 0; i < height; i++) {
-			DMANow(3, &spriteTiles[OFFSET((origRow*8) + (8*i), (origCol*8*2), 64)], &CHARBLOCK_SPRITE[OFFSET((sheetRow*8) + (8*i), (sheetCol*8*2), 64)], width*8*2);
+			DMANow(3, 	&spriteTiles[OFFSET((origRow*8) + (8*i), (origCol*8*2), 64)], 
+						&CHARBLOCK_SPRITE[OFFSET((sheetRow*8) + (8*i), (sheetCol*8*2), 64)], 
+						width*8*2);
 	}
 }
 
