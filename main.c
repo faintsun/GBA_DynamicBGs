@@ -31,7 +31,6 @@ int main() {
 		buttonHandler(CURRENT_AREA_P);
 		cameraHandler();
 
-
 		updateScreenLocations();
 		draw();
 		waitForVblank();
@@ -55,7 +54,6 @@ void init() {
 	loadPalette(currMap);
 	loadMap(currMap, 8, 8);
 
-	//setSpriteTiles(s_MayTiles);
 	setSpritePal(s_MayPal);
 
 	player.aniCounter = 32;
@@ -72,7 +70,6 @@ void hideSprites() {
 void draw() {
 	hideSprites();
 
-
 	drawPlayer();
 	//drawHelperNumbers(CURRENT_AREA_P);
 	DMANow(3, shadowOAM, OAM, 128 * 4);
@@ -80,22 +77,9 @@ void draw() {
 }
 
 void buttonHandler(CURRENTMAP* a) {
-	
-	// if (!moving) {
-	// 	if (DIRPAD_HELD) {
-	// 		startMovePlayer();
-	// 	}
-	// }
 
 	oldButtons = buttons;
 	buttons = BUTTONS;
-
-	char checkButtonPress = 0;
-
-	if (BUTTON_PRESSED(BUTTON_RIGHT)) {
-		//dmaSpriteSheet(testSpriteTiles, 0, 0, 0, 0, 5, 1);
-		dmaSpriteSheet(testSpriteTiles, 0, 0, 0, 3, 2, 2);
-	}
 	
 	if (!moving) {
 		int inputCheck = 0;
@@ -130,38 +114,14 @@ void buttonHandler(CURRENTMAP* a) {
 		}
 
 		if (inputCheck) {
-			//player.aniCounter = 16;
 			moving = 1;
 			startPlayerAniCounter();
 			nextMove();
 		} 
 	}
-
-
-
 }
 
-// we call this when the player has been resting and
-// a directional button is pushed. we check to see if 
-// we can move and if so, start moving.
-// void startMovePlayer() {
-// 		// check if player's col - screenwidth/2 > 0
-// 		// if so, move the camera, not the player
-// 		// if not, move the player, not the camera
-// 	if(BUTTON_HELD(BUTTON_LEFT)) {
 
-// 		if (CURRENT_AREA_P->tileC > 0) {
-
-// 			nextMove = moveMapLeft;
-// 			inputCheck = 1;
-// 		}
-// 	}
-
-// }
-
-void movePlayerLeft() {
-
-}
 
 void cameraHandler() {
 
@@ -269,7 +229,7 @@ void updateScreenLocations() {
 
 void drawPlayer() {
 
-	if (player.aniDir != IDLE && player.aniFrame == 0 || player.aniFrame == 2) {
+	if (player.aniDir != IDLE && (player.aniFrame == 0 || player.aniFrame == 2)) {
 		shadowOAM[OAM_PLAYER].attr0 = (player.screenRow-1) | ATTR0_TALL;
 	} else {
 		shadowOAM[OAM_PLAYER].attr0 = player.screenRow | ATTR0_TALL;
@@ -280,7 +240,6 @@ void drawPlayer() {
 		shadowOAM[OAM_PLAYER].attr1 = ATTR1_SIZE32 | player.screenCol;
 	}
 	shadowOAM[OAM_PLAYER].attr2 = SPRITEOFFSET16(0, 0);
-
 
 
 	if (player.aniDir == IDLE) {
@@ -331,10 +290,10 @@ void drawPlayer() {
 		}
 	}
 
-	// dmaSpriteSheet(s_MayTiles, 0, 6, 0, 8, 5, 1);
-	// shadowOAM[2].attr0 = 24 | ATTR0_SQUARE;
-	// shadowOAM[2].attr1 = ATTR1_SIZE8 | (224);
-	// shadowOAM[2].attr2 = SPRITEOFFSET16(0, 8 + player.aniFrame);
+	dmaSpriteSheet(s_MayTiles, 0, 6, 0, 8, 5, 1);
+	shadowOAM[2].attr0 = 24 | ATTR0_SQUARE;
+	shadowOAM[2].attr1 = ATTR1_SIZE8 | (224);
+	shadowOAM[2].attr2 = SPRITEOFFSET16(0, 8 + player.aniFrame);
 
 	
 }

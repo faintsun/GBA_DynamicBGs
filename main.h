@@ -15,18 +15,6 @@ int dirTimer;
 
 AREAMAP* currMap;
 
-// prototypes
-void (*nextMove)();
-
-void init();
-void draw();
-void updateScreenLocations();
-void buttonHandler(CURRENTMAP*);
-void cameraHandler();
-void hideSprites();
-
-void drawPlayer();
-void drawHelperNumbers(CURRENTMAP* a);
 
 typedef struct {
 	short worldCol;
@@ -41,3 +29,20 @@ typedef struct {
 } PLAYER;
 
 PLAYER player;
+
+// prototypes
+void (*nextMove)();
+
+void init();
+void draw();
+void updateScreenLocations();
+void buttonHandler(CURRENTMAP*);
+void cameraHandler();
+void hideSprites();
+
+void animatePlayer(PLAYER*);
+void drawPlayer();
+// void drawHelperNumbers(CURRENTMAP* a);
+
+
+void startPlayerAniCounter();
